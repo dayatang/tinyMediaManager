@@ -15,6 +15,7 @@
  */
 package org.tinymediamanager.thirdparty.upnp;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +37,7 @@ import org.fourthline.cling.model.message.header.UDADeviceTypeHeader;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.DeviceDetails;
 import org.fourthline.cling.model.meta.DeviceIdentity;
+import org.fourthline.cling.model.meta.Icon;
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.LocalService;
 import org.fourthline.cling.model.meta.ManufacturerDetails;
@@ -149,7 +151,22 @@ public class Upnp {
       LocalService<ConnectionManagerService> cms = new AnnotationLocalServiceBinder().read(ConnectionManagerService.class);
       cms.setManager(new DefaultServiceManager<>(cms, ConnectionManagerService.class));
 
-      this.localDevice = new LocalDevice(identity, type, details, new LocalService[] { cds, cms });
+      Icon icon = null;
+      try {
+        // only when deployed
+        icon = new Icon("image/png", 128, 128, 24, new File("tmm.png"));
+      }
+      catch (Exception e) {
+        // in eclipse
+        try {
+          icon = new Icon("image/png", 128, 128, 24, new File("AppBundler/tmm.png"));
+        }
+        catch (Exception e2) {
+          LOGGER.warn("Did not find device icon...");
+        }
+      }
+
+      this.localDevice = new LocalDevice(identity, type, details, new Icon[] { icon }, new LocalService[] { cds, cms });
     }
 
     return this.localDevice;
