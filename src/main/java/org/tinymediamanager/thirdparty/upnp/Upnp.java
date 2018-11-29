@@ -16,30 +16,48 @@
 package org.tinymediamanager.thirdparty.upnp;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceImpl;
 import org.fourthline.cling.binding.LocalServiceBindingException;
+import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
+import org.fourthline.cling.binding.xml.DescriptorBindingException;
 import org.fourthline.cling.controlpoint.ActionCallback;
+import org.fourthline.cling.model.DefaultServiceManager;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
 import org.fourthline.cling.model.message.header.UDADeviceTypeHeader;
 import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.DeviceDetails;
+import org.fourthline.cling.model.meta.DeviceIdentity;
+import org.fourthline.cling.model.meta.LocalDevice;
+import org.fourthline.cling.model.meta.LocalService;
+import org.fourthline.cling.model.meta.ManufacturerDetails;
+import org.fourthline.cling.model.meta.ModelDetails;
 import org.fourthline.cling.model.meta.Service;
+import org.fourthline.cling.model.profile.RemoteClientInfo;
+import org.fourthline.cling.model.types.DLNACaps;
+import org.fourthline.cling.model.types.DLNADoc;
+import org.fourthline.cling.model.types.DeviceType;
 import org.fourthline.cling.model.types.UDADeviceType;
 import org.fourthline.cling.model.types.UDAServiceId;
+import org.fourthline.cling.model.types.UDN;
 import org.fourthline.cling.registry.RegistrationException;
 import org.fourthline.cling.support.avtransport.callback.Play;
 import org.fourthline.cling.support.avtransport.callback.SetAVTransportURI;
 import org.fourthline.cling.support.avtransport.callback.Stop;
+import org.fourthline.cling.support.connectionmanager.ConnectionManagerService;
 import org.fourthline.cling.support.contentdirectory.DIDLParser;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.transport.RouterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tinymediamanager.ReleaseInfo;
 import org.tinymediamanager.core.entities.MediaEntity;
 import org.tinymediamanager.core.entities.MediaFile;
 import org.tinymediamanager.core.movie.entities.Movie;
@@ -49,6 +67,7 @@ import org.tinymediamanager.thirdparty.NetworkUtil;
 public class Upnp {
   private static final Logger LOGGER        = LoggerFactory.getLogger(Upnp.class);
   public static final String  IP            = NetworkUtil.getMachineIPAddress();
+  public static final int     PORT          = 8008;
 
   // ROOT is fix 0 , do not change!!
   public static final String  ID_ROOT       = "0";
@@ -59,6 +78,7 @@ public class Upnp {
   private UpnpService         upnpService   = null;
   private WebServer           webServer     = null;
   private Service             playerService = null;
+  private LocalDevice         localDevice   = null;
 
   private Upnp() {
   }
@@ -74,13 +94,57 @@ public class Upnp {
     return this.upnpService;
   }
 
+  public LocalDevice getLocalDevice() {
+    return this.localDevice;
+  }
+
   /**
    * Starts out UPNP Service / Listener
    */
   public void createUpnpService() {
     if (this.upnpService == null) {
+
       this.upnpService = new UpnpServiceImpl(UpnpListener.getListener());
     }
+  }
+
+  private LocalDevice getDevice()
+      throws ValidationException, LocalServiceBindingException, IOException, IllegalArgumentException, URISyntaxException {
+
+    if (localDevice == null) {
+      DeviceIdentity identity = new DeviceIdentity(UDN.uniqueSystemIdentifier("tinyMediaManager"));
+      DeviceType type = new UDADeviceType("MediaServer", 1);
+      String hostname = NetworkUtil.getMachineHostname();
+      if (hostname == null) {
+        hostname = IP;
+      }
+
+      // @formatter:off
+      DeviceDetails details = new DeviceDetails("tinyMediaManager (" + hostname + ")",
+        new ManufacturerDetails("tinyMediaManager", "http://www.tinymediamanager.org/"),
+        new ModelDetails("tinyMediaManager", "tinyMediaManager - Media Server", ReleaseInfo.getVersion()), 
+        new URI("http://" + hostname + ":" + PORT + "/upnp/meta/description.xml"),
+        new DLNADoc[] {
+            new DLNADoc("DMS", DLNADoc.Version.V1_5), 
+            new DLNADoc("M-DMS", DLNADoc.Version.V1_5) 
+        },
+        new DLNACaps(new String[] { "av-upload", "image-upload", "audio-upload" }));
+      // @formatter:on
+
+      LOGGER.info("Hello, i'm " + identity.getUdn().getIdentifierString());
+
+      // Content Directory Service
+      LocalService<ContentDirectoryService> cds = new AnnotationLocalServiceBinder().read(ContentDirectoryService.class);
+      cds.setManager(new DefaultServiceManager<ContentDirectoryService>(cds, ContentDirectoryService.class));
+
+      // Connection Manager Service
+      LocalService<ConnectionManagerService> cms = new AnnotationLocalServiceBinder().read(ConnectionManagerService.class);
+      cms.setManager(new DefaultServiceManager<>(cms, ConnectionManagerService.class));
+
+      this.localDevice = new LocalDevice(identity, type, details, new LocalService[] { cds, cms });
+    }
+
+    return this.localDevice;
   }
 
   /**
@@ -198,7 +262,18 @@ public class Upnp {
       }
     };
     this.upnpService.getControlPoint().execute(stopAction);
+  }
 
+  public String getDeviceDescriptorXML() {
+    String xml = "";
+    try {
+      xml = upnpService.getConfiguration().getDeviceDescriptorBinderUDA10().generate(localDevice, new RemoteClientInfo(),
+          upnpService.getConfiguration().getNamespace());
+    }
+    catch (DescriptorBindingException e) {
+      LOGGER.warn("Could not generate UPNP device descriptor", e);
+    }
+    return xml;
   }
 
   /**
@@ -208,7 +283,7 @@ public class Upnp {
   public void startWebServer() {
     try {
       if (this.webServer == null) {
-        this.webServer = new WebServer();
+        this.webServer = new WebServer(PORT);
       }
     }
     catch (IOException e) {
@@ -224,10 +299,12 @@ public class Upnp {
 
   public void startMediaServer() {
     createUpnpService();
+    startWebServer();
     try {
-      this.upnpService.getRegistry().addDevice(MediaServer.createDevice());
+      this.upnpService.getRegistry().addDevice(getDevice());
     }
-    catch (RegistrationException | LocalServiceBindingException | ValidationException | IOException e) {
+    catch (RegistrationException | LocalServiceBindingException | ValidationException | IOException | IllegalArgumentException
+        | URISyntaxException e) {
       LOGGER.warn("could not start UPNP MediaServer!", e);
     }
   }

@@ -312,8 +312,8 @@ public class TinyMediaManager {
           }
           Upnp u = Upnp.getInstance();
           if (Globals.settings.isUpnpShareLibrary()) {
-            u.startWebServer();
             u.createUpnpService();
+            u.startWebServer();
             u.startMediaServer();
           }
           if (Globals.settings.isUpnpRemotePlay()) {

@@ -21,10 +21,10 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 public class WebServer extends NanoHTTPD {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebServer.class);
 
-  public WebServer() throws IOException {
-    super(8008);
+  public WebServer(int port) throws IOException {
+    super(port);
     start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-    LOGGER.info("Webserver running on port 8008");
+    LOGGER.info("Webserver running on port {}", port);
   }
 
   @Override
@@ -32,7 +32,17 @@ public class WebServer extends NanoHTTPD {
     String uri = session.getUri();
     LOGGER.info("Incoming: " + session.getRemoteIpAddress() + " " + session.getMethod() + " " + uri);
 
-    if (uri.startsWith("/upnp")) {
+    if (uri.startsWith("/upnp/meta")) {
+      // serve UPNP meta xmls...
+      if (uri.endsWith("description.xml")) {
+        String xml = Upnp.getInstance().getDeviceDescriptorXML();
+        LOGGER.debug(xml);
+        return newFixedLengthResponse(Response.Status.OK, "text/xml", xml);
+      }
+
+      return newFixedLengthResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, "BAD UPNP META REQUEST");
+    }
+    else if (uri.startsWith("/upnp")) {
       String[] path = StringUtils.split(uri, '/');
       // [0] = upnp
       // [1] = movie|tvshow
