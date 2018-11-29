@@ -319,7 +319,6 @@ public class TinyMediaManager {
           if (Globals.settings.isUpnpRemotePlay()) {
             u.createUpnpService();
             u.sendPlayerSearchRequest();
-            u.startWebServer();
           }
 
           // do upgrade tasks after database loading
