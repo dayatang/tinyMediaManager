@@ -46,7 +46,8 @@ public class Metadata {
 
       for (MediaFile mf : tmmMovie.getMediaFiles(MediaFileType.VIDEO)) {
         String rel = tmmMovie.getPathNIO().relativize(mf.getFileAsPath()).toString().replaceAll("\\\\", "/");
-        String url = "http://" + Upnp.IP + ":8008/upnp/movies/" + tmmMovie.getDbId().toString() + "/" + URLEncoder.encode(rel, "UTF-8");
+        String url = "http://" + Upnp.IP + ":" + Upnp.WEBSERVER_PORT + "/upnp/movies/" + tmmMovie.getDbId().toString() + "/"
+            + URLEncoder.encode(rel, "UTF-8");
         Res r = new Res(MimeTypes.getMimeType(mf.getExtension()), mf.getFilesize(), url);
         m.addResource(r);
       }

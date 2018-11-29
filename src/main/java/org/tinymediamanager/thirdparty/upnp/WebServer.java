@@ -32,17 +32,7 @@ public class WebServer extends NanoHTTPD {
     String uri = session.getUri();
     LOGGER.info("Incoming: " + session.getRemoteIpAddress() + " " + session.getMethod() + " " + uri);
 
-    if (uri.startsWith("/upnp/meta")) {
-      // serve UPNP meta xmls...
-      if (uri.endsWith("description.xml")) {
-        String xml = Upnp.getInstance().getDeviceDescriptorXML();
-        LOGGER.debug(xml);
-        return newFixedLengthResponse(Response.Status.OK, "text/xml", xml);
-      }
-
-      return newFixedLengthResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, "BAD UPNP META REQUEST");
-    }
-    else if (uri.startsWith("/upnp")) {
+    if (uri.startsWith("/upnp")) {
       String[] path = StringUtils.split(uri, '/');
       // [0] = upnp
       // [1] = movie|tvshow

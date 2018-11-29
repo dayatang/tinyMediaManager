@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fourthline.cling.DefaultUpnpServiceConfiguration;
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceImpl;
 import org.fourthline.cling.binding.LocalServiceBindingException;
@@ -65,20 +66,21 @@ import org.tinymediamanager.core.tvshow.entities.TvShowEpisode;
 import org.tinymediamanager.thirdparty.NetworkUtil;
 
 public class Upnp {
-  private static final Logger LOGGER        = LoggerFactory.getLogger(Upnp.class);
-  public static final String  IP            = NetworkUtil.getMachineIPAddress();
-  public static final int     PORT          = 8008;
+  private static final Logger LOGGER         = LoggerFactory.getLogger(Upnp.class);
+  public static final String  IP             = NetworkUtil.getMachineIPAddress();
+  public static final int     UPNP_PORT      = 8008;
+  public static final int     WEBSERVER_PORT = 8009;
 
   // ROOT is fix 0 , do not change!!
-  public static final String  ID_ROOT       = "0";
-  public static final String  ID_MOVIES     = "1";
-  public static final String  ID_TVSHOWS    = "2";
+  public static final String  ID_ROOT        = "0";
+  public static final String  ID_MOVIES      = "1";
+  public static final String  ID_TVSHOWS     = "2";
 
   private static Upnp         instance;
-  private UpnpService         upnpService   = null;
-  private WebServer           webServer     = null;
-  private Service             playerService = null;
-  private LocalDevice         localDevice   = null;
+  private UpnpService         upnpService    = null;
+  private WebServer           webServer      = null;
+  private Service             playerService  = null;
+  private LocalDevice         localDevice    = null;
 
   private Upnp() {
   }
@@ -103,8 +105,13 @@ public class Upnp {
    */
   public void createUpnpService() {
     if (this.upnpService == null) {
-
-      this.upnpService = new UpnpServiceImpl(UpnpListener.getListener());
+      this.upnpService = new UpnpServiceImpl(new DefaultUpnpServiceConfiguration(UPNP_PORT), UpnpListener.getListener());
+      try {
+        this.upnpService.getRouter().enable();
+      }
+      catch (RouterException e) {
+        LOGGER.warn("Could not start UPNP router: {}", e);
+      }
     }
   }
 
@@ -123,7 +130,8 @@ public class Upnp {
       DeviceDetails details = new DeviceDetails("tinyMediaManager (" + hostname + ")",
         new ManufacturerDetails("tinyMediaManager", "http://www.tinymediamanager.org/"),
         new ModelDetails("tinyMediaManager", "tinyMediaManager - Media Server", ReleaseInfo.getVersion()), 
-        new URI("http://" + hostname + ":" + PORT + "/upnp/meta/description.xml"),
+        // @Namespace default /dev/<udn>/desc
+        new URI("http://" + hostname + ":" + UPNP_PORT + "/dev/" + identity.getUdn().getIdentifierString() + "/desc"),
         new DLNADoc[] {
             new DLNADoc("DMS", DLNADoc.Version.V1_5), 
             new DLNADoc("M-DMS", DLNADoc.Version.V1_5) 
@@ -283,7 +291,7 @@ public class Upnp {
   public void startWebServer() {
     try {
       if (this.webServer == null) {
-        this.webServer = new WebServer(PORT);
+        this.webServer = new WebServer(WEBSERVER_PORT);
       }
     }
     catch (IOException e) {
@@ -299,7 +307,6 @@ public class Upnp {
 
   public void startMediaServer() {
     createUpnpService();
-    startWebServer();
     try {
       this.upnpService.getRegistry().addDevice(getDevice());
     }
