@@ -85,7 +85,8 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
   private static final ResourceBundle    BUNDLE                     = ResourceBundle.getBundle("messages", new UTF8Control()); //$NON-NLS-1$
 
   private MovieSettings                  settings                   = MovieModuleManager.MOVIE_SETTINGS;
-  private List<String>                   separators                 = new ArrayList<>(Arrays.asList("_", ".", "-"));
+  private List<String>                   spaceReplacement           = new ArrayList<>(Arrays.asList("_", ".", "-"));
+  private List<String>                   colonReplacement           = new ArrayList<>(Arrays.asList("", "-"));
   private EventList<MovieRenamerExample> exampleEventList           = null;
 
   /**
@@ -97,7 +98,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
   private JCheckBox                      chckbxAsciiReplacement;
 
   private JCheckBox                      chckbxSpaceSubstitution;
-  private JComboBox                      cbSeparator;
+  private JComboBox                      cbSpaceReplacement;
   private JComboBox                      cbMovieForPreview;
   private JCheckBox                      chckbxRemoveOtherNfos;
   private JCheckBox                      chckbxMoviesetSingleMovie;
@@ -118,6 +119,8 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
   private JLabel                         lblDefaultFilePattern;
   private JLabel                         lblSubtitleLanguage;
   private JComboBox<LanguageStyle>       cbSubtitleLanguage;
+  private JLabel                         lblColonReplacement;
+  private JComboBox                      cbColonReplacement;
 
   public MovieRenamerSettingsPanel() {
     setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("250dlu:grow"), FormSpecs.RELATED_GAP_COLSPEC, },
@@ -135,9 +138,9 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
             FormSpecs.RELATED_GAP_COLSPEC, },
         new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
             FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-            FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+            FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
             FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-            FormSpecs.RELATED_GAP_ROWSPEC, }));
+            FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, }));
 
     chckbxSpaceSubstitution = new JCheckBox(BUNDLE.getString("Settings.movie.renamer.spacesubstitution")); //$NON-NLS-1$
     chckbxSpaceSubstitution.addActionListener(actionCreateRenamerExample);
@@ -166,9 +169,9 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     tfMoviePath.setColumns(10);
     panelRenamer.add(chckbxSpaceSubstitution, "8, 4");
 
-    cbSeparator = new JComboBox(separators.toArray());
-    panelRenamer.add(cbSeparator, "10, 4, fill, default");
-    cbSeparator.addActionListener(new ActionListener() {
+    cbSpaceReplacement = new JComboBox(spaceReplacement.toArray());
+    panelRenamer.add(cbSpaceReplacement, "10, 4, fill, default");
+    cbSpaceReplacement.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
         checkChanges();
@@ -186,13 +189,27 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
 
     chckbxMoviesetSingleMovie = new JCheckBox(BUNDLE.getString("Settings.renamer.moviesetsinglemovie")); //$NON-NLS-1$
     chckbxMoviesetSingleMovie.addActionListener(actionCreateRenamerExample);
-    panelRenamer.add(chckbxMoviesetSingleMovie, "8, 6, 5, 1, fill, default");
+    panelRenamer.add(chckbxMoviesetSingleMovie, "8, 8, 5, 1, fill, default");
+
+    lblColonReplacement = new JLabel(BUNDLE.getString("Settings.tvshow.renamer.colonreplacement"));
+    lblColonReplacement.setToolTipText(BUNDLE.getString("Settings.tvshow.renamer.colonreplacement.hint"));
+    panelRenamer.add(lblColonReplacement, "8, 6, right, default");
+
+    cbColonReplacement = new JComboBox(colonReplacement.toArray());
+    panelRenamer.add(cbColonReplacement, "10, 6, fill, default");
+    cbColonReplacement.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        checkChanges();
+        createRenamerExample();
+      }
+    });
 
     lblMMDWarning = new JLabel(BUNDLE.getString("Settings.renamer.folder.warning")); //$NON-NLS-1$
-    panelRenamer.add(lblMMDWarning, "2, 8, 11, 1");
+    panelRenamer.add(lblMMDWarning, "2, 10, 11, 1");
 
     JLabel lblMovieFilename = new JLabel(BUNDLE.getString("Settings.renamer.file")); //$NON-NLS-1$
-    panelRenamer.add(lblMovieFilename, "2, 10, right, fill");
+    panelRenamer.add(lblMovieFilename, "2, 12, right, fill");
 
     tfMovieFilename = new JTextField();
     tfMovieFilename.getDocument().addDocumentListener(new DocumentListener() {
@@ -211,21 +228,21 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
         createRenamerExample();
       }
     });
-    panelRenamer.add(tfMovieFilename, "4, 10, fill, default");
+    panelRenamer.add(tfMovieFilename, "4, 12, fill, default");
     tfMovieFilename.setColumns(10);
     lblMovieFilename.setLabelFor(tfMovieFilename);
 
     chckbxAsciiReplacement = new JCheckBox(BUNDLE.getString("Settings.renamer.asciireplacement")); //$NON-NLS-1$
     chckbxAsciiReplacement.addActionListener(actionCreateRenamerExample);
-    panelRenamer.add(chckbxAsciiReplacement, "8, 10, 5, 1");
+    panelRenamer.add(chckbxAsciiReplacement, "8, 12, 5, 1");
 
     lblDefault2T = new JLabel(BUNDLE.getString("Settings.default"));
     TmmFontHelper.changeFont(lblDefault2T, 0.833);
-    panelRenamer.add(lblDefault2T, "2, 12, right, top");
+    panelRenamer.add(lblDefault2T, "2, 14, right, top");
 
     lblDefaultFilePattern = new JLabel(MovieSettings.DEFAULT_RENAMER_FILE_PATTERN);
     TmmFontHelper.changeFont(lblDefaultFilePattern, 0.833);
-    panelRenamer.add(lblDefaultFilePattern, "4, 12, default, top");
+    panelRenamer.add(lblDefaultFilePattern, "4, 14, default, top");
 
     JTextPane txtpntAsciiHint = new JTextPane();
     txtpntAsciiHint.setOpaque(false);
@@ -233,7 +250,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     txtpntAsciiHint.setText(BUNDLE.getString("Settings.renamer.asciireplacement.hint")); //$NON-NLS-1$
     TmmFontHelper.changeFont(txtpntAsciiHint, 0.833);
     txtpntAsciiHint.setBackground(UIManager.getColor("Panel.background"));
-    panelRenamer.add(txtpntAsciiHint, "8, 12, 5, 1, fill, fill");
+    panelRenamer.add(txtpntAsciiHint, "8, 14, 5, 1, fill, fill");
 
     JTextPane txtrChooseAFolder = new JTextPane();
     txtrChooseAFolder.setOpaque(false);
@@ -241,16 +258,16 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     TmmFontHelper.changeFont(txtrChooseAFolder, 0.833);
     txtrChooseAFolder.setText(BUNDLE.getString("Settings.movie.renamer.example")); //$NON-NLS-1$
     txtrChooseAFolder.setBackground(UIManager.getColor("Panel.background"));
-    panelRenamer.add(txtrChooseAFolder, "2, 14, 3, 3, fill, top");
+    panelRenamer.add(txtrChooseAFolder, "2, 16, 3, 3, fill, top");
 
     chckbxRemoveOtherNfos = new JCheckBox(BUNDLE.getString("Settings.renamer.removenfo")); //$NON-NLS-1$
-    panelRenamer.add(chckbxRemoveOtherNfos, "8, 14, 5, 1");
+    panelRenamer.add(chckbxRemoveOtherNfos, "8, 16, 5, 1");
 
     lblSubtitleLanguage = new JLabel(BUNDLE.getString("Settings.renamer.language")); //$NON-NLS-1$
-    panelRenamer.add(lblSubtitleLanguage, "8, 16, right, default");
+    panelRenamer.add(lblSubtitleLanguage, "8, 18, right, default");
 
     cbSubtitleLanguage = new JComboBox(LanguageStyle.values());
-    panelRenamer.add(cbSubtitleLanguage, "10, 16, 3, 1, fill, default");
+    panelRenamer.add(cbSubtitleLanguage, "10, 18, 3, 1, fill, default");
 
     exampleEventList = GlazedLists
         .threadSafeList(new ObservableElementList<>(new BasicEventList<MovieRenamerExample>(), GlazedLists.beanConnector(MovieRenamerExample.class)));
@@ -293,10 +310,17 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     initDataBindings();
 
     // space separator
-    String replacement = settings.getMovieRenamerSpaceReplacement();
-    int index = separators.indexOf(replacement);
+    String spaceReplacement = settings.getMovieRenamerSpaceReplacement();
+    int index = this.spaceReplacement.indexOf(spaceReplacement);
     if (index >= 0) {
-      cbSeparator.setSelectedIndex(index);
+      cbSpaceReplacement.setSelectedIndex(index);
+    }
+
+    // colon replacement
+    String colonReplacement = settings.getMovieRenamerColonReplacement();
+    index = this.colonReplacement.indexOf(colonReplacement);
+    if (index >= 0) {
+      cbColonReplacement.setSelectedIndex(index);
     }
 
     // language style
@@ -397,8 +421,11 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
 
   private void checkChanges() {
     // separator
-    String separator = (String) cbSeparator.getSelectedItem();
+    String separator = (String) cbSpaceReplacement.getSelectedItem();
     settings.setMovieRenamerSpaceReplacement(separator);
+
+    String colonReplacement = (String) cbColonReplacement.getSelectedItem();
+    settings.setMovieRenamerColonReplacement(colonReplacement);
   }
 
   @Override

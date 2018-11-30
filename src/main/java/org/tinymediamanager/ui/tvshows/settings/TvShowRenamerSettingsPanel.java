@@ -92,6 +92,7 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
 
   private TvShowSettings                  settings         = TvShowModuleManager.SETTINGS;
   private List<String>                    spaceReplacement = new ArrayList<>(Arrays.asList("_", ".", "-"));
+  private List<String>                    colonReplacement = new ArrayList<>(Arrays.asList("", "-"));
   private EventList<TvShowRenamerExample> exampleEventList = null;
 
   /**
@@ -114,6 +115,8 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
   private JTextField                      tfEpisodeFilename;
   private JLabel                          lblEpisodeFileName;
   private JComboBox<LanguageStyle>        cbLanguageStyle;
+  private JLabel                          lblColonReplacement;
+  private JComboBox                       cbColonReplacement;
 
   public TvShowRenamerSettingsPanel() {
     setLayout(
@@ -164,8 +167,8 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
         new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC,
             FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC,
             FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC,
-            FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-            FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, }));
+            FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC,
+            FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, }));
     {
       final JLabel lblDefault = new JLabel(BUNDLE.getString("Settings.default")); //$NON-NLS-1$
       TmmFontHelper.changeFont(lblDefault, 0.833);
@@ -205,6 +208,7 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
 
     chckbxAsciiReplacement = new JCheckBox(BUNDLE.getString("Settings.renamer.asciireplacement")); //$NON-NLS-1$
     chckbxAsciiReplacement.addActionListener(renamerActionListener);
+    panelRenamer.add(chckbxAsciiReplacement, "2, 15, 9, 1");
 
     chckbxSpaceReplacement = new JHintCheckBox(BUNDLE.getString("Settings.movie.renamer.spacesubstitution")); //$NON-NLS-1$
     chckbxSpaceReplacement.setHintIcon(IconManager.HINT);
@@ -220,19 +224,26 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
     cbSpaceReplacement = new JComboBox(spaceReplacement.toArray());
     panelRenamer.add(cbSpaceReplacement, "4, 11, fill, default");
     cbSpaceReplacement.addActionListener(renamerActionListener);
-    panelRenamer.add(chckbxAsciiReplacement, "2, 13, 9, 1");
+
+    lblColonReplacement = new JLabel(BUNDLE.getString("Settings.tvshow.renamer.colonreplacement"));
+    lblColonReplacement.setToolTipText(BUNDLE.getString("Settings.tvshow.renamer.colonreplacement.hint"));
+    panelRenamer.add(lblColonReplacement, "2, 13, right, default");
+
+    cbColonReplacement = new JComboBox(colonReplacement.toArray());
+    panelRenamer.add(cbColonReplacement, "4, 13, fill, default");
+    cbColonReplacement.addActionListener(renamerActionListener);
 
     txtpntAsciiHint = new JTextPane();
     txtpntAsciiHint.setText(BUNDLE.getString("Settings.renamer.asciireplacement.hint")); //$NON-NLS-1$
     TmmFontHelper.changeFont(txtpntAsciiHint, 0.833);
     txtpntAsciiHint.setBackground(UIManager.getColor("Panel.background"));
-    panelRenamer.add(txtpntAsciiHint, "2, 15, 7, 1, fill, fill");
+    panelRenamer.add(txtpntAsciiHint, "2, 17, 7, 1, fill, fill");
 
     JLabel lblLanguageStyle = new JLabel(BUNDLE.getString("Settings.renamer.language")); //$NON-NLS-1$
-    panelRenamer.add(lblLanguageStyle, "2, 17, right, default");
+    panelRenamer.add(lblLanguageStyle, "2, 19, right, default");
 
     cbLanguageStyle = new JComboBox(LanguageStyle.values());
-    panelRenamer.add(cbLanguageStyle, "4, 17, 3, 1, fill, default");
+    panelRenamer.add(cbLanguageStyle, "4, 19, 3, 1, fill, default");
 
     panelExample = new JPanel();
     panelExample.setBorder(new TitledBorder(null, BUNDLE.getString("Settings.example"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
@@ -284,6 +295,12 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
     int index = this.spaceReplacement.indexOf(spaceReplacement);
     if (index >= 0) {
       cbSpaceReplacement.setSelectedIndex(index);
+    }
+
+    String colonReplacement = settings.getRenamerColonReplacement();
+    index = this.colonReplacement.indexOf(colonReplacement);
+    if (index >= 0) {
+      cbColonReplacement.setSelectedIndex(index);
     }
 
     // examples
@@ -398,6 +415,9 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
   private void checkChanges() {
     String spaceReplacement = (String) cbSpaceReplacement.getSelectedItem();
     settings.setRenamerSpaceReplacement(spaceReplacement);
+
+    String colonReplacement = (String) cbColonReplacement.getSelectedItem();
+    settings.setRenamerColonReplacement(colonReplacement);
   }
 
   /*************************************************************

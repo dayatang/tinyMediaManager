@@ -152,6 +152,7 @@ public class MovieSettings extends AbstractModelObject {
   private String                          movieRenamerFilename                     = DEFAULT_RENAMER_FILE_PATTERN;
   private boolean                         movieRenamerSpaceSubstitution            = false;
   private String                          movieRenamerSpaceReplacement             = "_";
+  private String                          movieRenamerColonReplacement             = "";
   private boolean                         movieRenamerNfoCleanup                   = false;
   private boolean                         movieRenamerCreateMoviesetForSingleMovie = false;
   private boolean                         asciiReplacement                         = false;
@@ -472,6 +473,16 @@ public class MovieSettings extends AbstractModelObject {
 
   public void setMovieRenamerSpaceReplacement(String movieRenamerSpaceReplacement) {
     this.movieRenamerSpaceReplacement = movieRenamerSpaceReplacement;
+  }
+
+  public String getMovieRenamerColonReplacement() {
+    return movieRenamerColonReplacement;
+  }
+
+  public void setMovieRenamerColonReplacement(String newValue) {
+    String oldValue = this.movieRenamerColonReplacement;
+    this.movieRenamerColonReplacement = newValue;
+    firePropertyChange("movieRenamerColonReplacement", oldValue, newValue);
   }
 
   public String getMovieScraper() {

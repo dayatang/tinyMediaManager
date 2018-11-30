@@ -969,27 +969,20 @@ public class TvShowRenamer {
   }
 
   private static String replaceToken(String destination, String token, String replacement) {
-    String replacingCleaned = "";
+    String replacingCleaned = replacement;
     if (StringUtils.isNotBlank(replacement)) {
-      // replace illegal characters
+      // replaces all invalid/illegal characters with "" except the colon, which will be changed to a dash (user setting)
       // http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-      replacingCleaned = replacement.replaceAll("([\"\\:<>|/?*])", "");
+      if ("-".equals(SETTINGS.getRenamerColonReplacement())) {
+        replacingCleaned = replacingCleaned.replaceAll(": ", " - "); // nicer
+        replacingCleaned = replacingCleaned.replaceAll(":", "-"); // nicer
+      }
+      else {
+        replacingCleaned = replacingCleaned.replaceAll(":", SETTINGS.getRenamerColonReplacement());
+      }
+
+      replacingCleaned = replacingCleaned.replaceAll("([\"\\:<>|/?*])", "");
     }
     return destination.replace(token, replacingCleaned);
   }
-
-  /**
-   * replaces all invalid/illegal characters for filenames with ""<br>
-   * except the colon, which will be changed to a dash
-   * 
-   * @param source
-   *          string to clean
-   * @return cleaned string
-   */
-  public static String replaceInvalidCharacters(String source) {
-    source = source.replaceAll(": ", " - "); // nicer
-    source = source.replaceAll(":", "-"); // nicer
-    return source.replaceAll("([\"\\\\:<>|/?*])", "");
-  }
-
 }

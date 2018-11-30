@@ -1282,8 +1282,14 @@ public class MovieRenamer {
    * @return cleaned string
    */
   public static String replaceInvalidCharacters(String source) {
-    source = source.replaceAll(": ", " - "); // nicer
-    source = source.replaceAll(":", "-"); // nicer
+    if ("-".equals(MovieModuleManager.MOVIE_SETTINGS.getMovieRenamerColonReplacement())) {
+      source = source.replaceAll(": ", " - "); // nicer
+      source = source.replaceAll(":", "-"); // nicer
+    }
+    else {
+      source = source.replaceAll(":", MovieModuleManager.MOVIE_SETTINGS.getMovieRenamerColonReplacement());
+    }
+
     return source.replaceAll("([\"\\\\:<>|/?*])", "");
   }
 

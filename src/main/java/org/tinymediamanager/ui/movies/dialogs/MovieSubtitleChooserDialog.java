@@ -50,6 +50,8 @@ import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.japura.gui.CheckComboBox;
 import org.japura.gui.model.ListCheckModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tinymediamanager.core.LanguageStyle;
 import org.tinymediamanager.core.entities.MediaFile;
 import org.tinymediamanager.core.movie.MovieList;
@@ -92,9 +94,11 @@ import ca.odell.glazedlists.swing.GlazedListsSwing;
  * @author Manuel Laggner
  */
 public class MovieSubtitleChooserDialog extends TmmDialog {
+  private static final Logger                               LOGGER             = LoggerFactory.getLogger(MovieSubtitleChooserDialog.class);
+
   private static final long                                 serialVersionUID   = -3104541519073924724L;
   /** @wbp.nls.resourceBundle messages */
-  private static final ResourceBundle                       BUNDLE             = ResourceBundle.getBundle("messages", new UTF8Control()); //$NON-NLS-1$
+  private static final ResourceBundle                       BUNDLE             = ResourceBundle.getBundle("messages", new UTF8Control());  //$NON-NLS-1$
 
   private final MovieList                                   movieList          = MovieList.getInstance();
   private final Movie                                       movieToScrape;
@@ -146,13 +150,6 @@ public class MovieSubtitleChooserDialog extends TmmDialog {
 
       if (MovieModuleManager.MOVIE_SETTINGS.getMovieSubtitleScrapers().contains(scraper.getId())) {
         model.addCheck(scraper);
-      }
-    }
-
-    for (MediaLanguages language : MediaLanguages.values()) {
-      cbLanguage.addItem(language);
-      if (language == MovieModuleManager.MOVIE_SETTINGS.getSubtitleScraperLanguage()) {
-        cbLanguage.setSelectedItem(language);
       }
     }
 
@@ -219,6 +216,12 @@ public class MovieSubtitleChooserDialog extends TmmDialog {
     panelContent.add(lblLanguageT, "2, 10, right, default");
 
     cbLanguage = new JComboBox<>();
+    for (MediaLanguages language : MediaLanguages.values()) {
+      cbLanguage.addItem(language);
+      if (language == MovieModuleManager.MOVIE_SETTINGS.getSubtitleScraperLanguage()) {
+        cbLanguage.setSelectedItem(language);
+      }
+    }
     cbLanguage.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -364,6 +367,7 @@ public class MovieSubtitleChooserDialog extends TmmDialog {
           searchResults.addAll(subtitleProvider.search(options));
         }
         catch (Exception e) {
+          LOGGER.warn("Error searching for subtitles", e);
         }
       }
 

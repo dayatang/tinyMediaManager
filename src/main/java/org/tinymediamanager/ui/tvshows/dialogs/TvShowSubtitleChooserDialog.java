@@ -47,6 +47,8 @@ import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.japura.gui.CheckComboBox;
 import org.japura.gui.model.ListCheckModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tinymediamanager.core.entities.MediaFile;
 import org.tinymediamanager.core.threading.DownloadTask;
 import org.tinymediamanager.core.threading.TmmTaskManager;
@@ -88,9 +90,10 @@ import ca.odell.glazedlists.swing.GlazedListsSwing;
  * @author Manuel Laggner
  */
 public class TvShowSubtitleChooserDialog extends TmmDialog {
+  private static final Logger                                LOGGER             = LoggerFactory.getLogger(TvShowSubtitleChooserDialog.class);
   private static final long                                  serialVersionUID   = -3104541519073924724L;
   /** @wbp.nls.resourceBundle messages */
-  private static final ResourceBundle                        BUNDLE             = ResourceBundle.getBundle("messages", new UTF8Control()); //$NON-NLS-1$
+  private static final ResourceBundle                        BUNDLE             = ResourceBundle.getBundle("messages", new UTF8Control());   //$NON-NLS-1$
 
   private final TvShowList                                   tvShowList         = TvShowList.getInstance();
   private final TvShowEpisode                                episodeToScrape;
@@ -141,13 +144,6 @@ public class TvShowSubtitleChooserDialog extends TmmDialog {
 
       if (TvShowModuleManager.SETTINGS.getTvShowSubtitleScrapers().contains(scraper.getId())) {
         model.addCheck(scraper);
-      }
-    }
-
-    for (MediaLanguages language : MediaLanguages.values()) {
-      cbLanguage.addItem(language);
-      if (language == TvShowModuleManager.SETTINGS.getSubtitleScraperLanguage()) {
-        cbLanguage.setSelectedItem(language);
       }
     }
 
@@ -202,6 +198,12 @@ public class TvShowSubtitleChooserDialog extends TmmDialog {
     panelContent.add(lblLanguageT, "2, 12, right, default");
 
     cbLanguage = new JComboBox<>();
+    for (MediaLanguages language : MediaLanguages.values()) {
+      cbLanguage.addItem(language);
+      if (language == TvShowModuleManager.SETTINGS.getSubtitleScraperLanguage()) {
+        cbLanguage.setSelectedItem(language);
+      }
+    }
     panelContent.add(cbLanguage, "4, 12, fill, default");
 
     final JButton btnSearch = new JButton(BUNDLE.getString("Button.search")); //$NON-NLS-1$
@@ -353,7 +355,8 @@ public class TvShowSubtitleChooserDialog extends TmmDialog {
           options.setEpisode(episode);
           searchResults.addAll(subtitleProvider.search(options));
         }
-        catch (Exception ignored) {
+        catch (Exception e) {
+          LOGGER.warn("Error searching for subtitles", e);
         }
       }
 

@@ -455,7 +455,7 @@ public class TraktTv {
             LOGGER.trace("Marking movie '" + tmmMovie.getTitle() + "' as watched on " + traktWatched.last_watched_at.toDate() + " (was "
                 + tmmMovie.getLastWatched() + ")");
             tmmMovie.setLastWatched(traktWatched.last_watched_at.toDate());
-            dirty = true;
+            // dirty = true; // we do not write date to NFO. But just mark for syncing back...
           }
 
           if (dirty) {
@@ -724,22 +724,26 @@ public class TraktTv {
             LOGGER.trace("Marking TvShow '" + tmmShow.getTitle() + "' as watched on " + traktShow.last_watched_at.toDate() + " (was "
                 + tmmShow.getLastWatched() + ")");
             tmmShow.setLastWatched(traktShow.last_watched_at.toDate());
-            dirty = true;
+            // dirty = true; // we do not write date to NFO. But just mark for syncing back...
           }
 
           // update collection date from trakt (episodes)
           for (BaseSeason bs : traktShow.seasons) {
             for (BaseEpisode be : bs.episodes) {
               TvShowEpisode tmmEP = tmmShow.getEpisode(bs.number, be.number);
+              if (tmmEP == null) {
+                continue;
+              }
               // update ep IDs - NOT YET POSSIBLE
               // boolean epDirty = updateIDs(tmmEP, be.ids);
 
-              if (tmmEP != null && be.last_watched_at != null && !(be.last_watched_at.toDate().equals(tmmEP.getLastWatched()))) {
-                tmmEP.setLastWatched(be.last_watched_at.toDate());
+              if (!tmmEP.isWatched()) {
                 tmmEP.setWatched(true);
                 tmmEP.writeNFO();
                 tmmEP.saveToDb();
-                // epDirty = true;
+              }
+              if (be.last_watched_at != null && !(be.last_watched_at.toDate().equals(tmmEP.getLastWatched()))) {
+                tmmEP.setLastWatched(be.last_watched_at.toDate());
               }
             }
           }

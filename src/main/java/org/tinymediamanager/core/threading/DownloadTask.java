@@ -83,14 +83,14 @@ public class DownloadTask extends TmmTask {
    *          the MediaFileType what we expect (video, trailer, graphic), so we can react on it
    */
   public DownloadTask(String url, Path toFile, MediaEntity addToMe, MediaFileType expectedFiletype) {
-    super(BUNDLE.getString("task.download") + " " + toFile, 100, TaskType.BACKGROUND_TASK);
+    super(BUNDLE.getString("task.download") + " \"" + toFile.getFileName() + "\"", 100, TaskType.BACKGROUND_TASK);
 
     this.url = url;
     this.file = toFile;
     this.media = addToMe;
     this.fileType = expectedFiletype;
 
-    setTaskDescription(file.getFileName().toString());
+    setTaskDescription(url);
   }
 
   /**
