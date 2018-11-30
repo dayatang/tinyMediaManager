@@ -17,6 +17,7 @@ x TMDB: fixed fallback language scraping for episodes
 x fixed subtitle search dialog
 x fixed Trakt.tv, updating local NFOs even when no changes
 x fixed IMDB release date parsing
+x allow moving of symlinks #410
 
 Version 2.9.13
 =======================
