@@ -256,6 +256,11 @@ public class UtilsTest extends BasicTest {
     for (String s : LanguageUtils.KEY_TO_LOCALE_MAP.keySet()) {
       System.out.println(s + " - " + LanguageUtils.KEY_TO_LOCALE_MAP.get(s));
     }
+
+    Locale l = Utils.getLocaleFromLanguage("zh_SG_");
+    System.out.println(l);
+    l = Utils.getLocaleFromLanguage("zh_SG_#Hans");
+    System.out.println(l);
   }
 
   @Test
