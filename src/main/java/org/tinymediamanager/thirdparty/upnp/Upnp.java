@@ -30,6 +30,7 @@ import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.binding.xml.DescriptorBindingException;
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.DefaultServiceManager;
+import org.fourthline.cling.model.DiscoveryOptions;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -325,7 +326,7 @@ public class Upnp {
   public void startMediaServer() {
     createUpnpService();
     try {
-      this.upnpService.getRegistry().addDevice(getDevice());
+      this.upnpService.getRegistry().addDevice(getDevice(), new DiscoveryOptions(true));
     }
     catch (RegistrationException | LocalServiceBindingException | ValidationException | IOException | IllegalArgumentException
         | URISyntaxException e) {
