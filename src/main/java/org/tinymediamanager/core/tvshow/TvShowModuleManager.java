@@ -158,7 +158,7 @@ public class TvShowModuleManager implements ITmmModule {
         episodes.put(epJson);
       }
       show.put("episodes", episodes);
-      LOGGER.info("Dumping TvShow:\n" + show.toString(4));
+      LOGGER.info("Dumping TvShow: {}\n{}", tvshow.getDbId(), show.toString(4));
     }
     catch (JsonProcessingException e) {
       LOGGER.error("Cannot parse JSON!", e);
