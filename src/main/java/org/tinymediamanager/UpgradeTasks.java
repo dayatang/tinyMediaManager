@@ -657,6 +657,20 @@ public class UpgradeTasks {
         }
       }
     }
+
+    // upgrade to v2.9.14
+    if (StrgUtils.compareVersion(v, "2.9.14") < 0) {
+      LOGGER.info("Performing database upgrade tasks to version 2.9.14");
+      // fixing moviesets by re-populating the movieSetId
+      for (MovieSet ms : MovieList.getInstance().getMovieSetList()) {
+        for (Movie m : ms.getMovies()) {
+          if (m.getMovieSet() == null) {
+            m.setMovieSet(ms);
+            m.saveToDb();
+          }
+        }
+      }
+    }
   }
 
   /**
