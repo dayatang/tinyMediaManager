@@ -58,6 +58,9 @@ import org.fourthline.cling.support.avtransport.callback.Stop;
 import org.fourthline.cling.support.connectionmanager.ConnectionManagerService;
 import org.fourthline.cling.support.contentdirectory.DIDLParser;
 import org.fourthline.cling.support.model.DIDLContent;
+import org.fourthline.cling.support.model.ProtocolInfos;
+import org.fourthline.cling.support.model.dlna.DLNAProfiles;
+import org.fourthline.cling.support.model.dlna.DLNAProtocolInfo;
 import org.fourthline.cling.transport.RouterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +125,7 @@ public class Upnp {
       throws ValidationException, LocalServiceBindingException, IOException, IllegalArgumentException, URISyntaxException {
 
     if (localDevice == null) {
-      DeviceIdentity identity = new DeviceIdentity(UDN.uniqueSystemIdentifier("tinyMediaManager"));
+      DeviceIdentity identity = new DeviceIdentity(UDN.uniqueSystemIdentifier("tinyMediaManager"), 600);
       DeviceType type = new UDADeviceType("MediaServer", 1);
       String hostname = NetworkUtil.getMachineHostname();
       if (hostname == null) {
@@ -142,6 +145,19 @@ public class Upnp {
         new DLNACaps(new String[] { "av-upload", "image-upload", "audio-upload" }));
       // @formatter:on
 
+      final ProtocolInfos protocols = new ProtocolInfos();
+      for (DLNAProfiles dlnaProfile : DLNAProfiles.values()) {
+        if (dlnaProfile == DLNAProfiles.NONE) {
+          continue;
+        }
+        try {
+          protocols.add(new DLNAProtocolInfo(dlnaProfile));
+        }
+        catch (Exception e) {
+          // Silently ignored.
+        }
+      }
+
       LOGGER.info("Hello, i'm " + identity.getUdn().getIdentifierString());
 
       // Content Directory Service
@@ -150,7 +166,16 @@ public class Upnp {
 
       // Connection Manager Service
       LocalService<ConnectionManagerService> cms = new AnnotationLocalServiceBinder().read(ConnectionManagerService.class);
-      cms.setManager(new DefaultServiceManager<>(cms, ConnectionManagerService.class));
+      // cms.setManager(new DefaultServiceManager<>(cms, ConnectionManagerService.class));
+      cms.setManager(new DefaultServiceManager<ConnectionManagerService>(cms, ConnectionManagerService.class) {
+        @Override
+        protected ConnectionManagerService createServiceInstance() throws Exception {
+          return new ConnectionManagerService(protocols, null);
+        }
+      });
+
+      LocalService<MSMediaReceiverRegistrarService> mss = new AnnotationLocalServiceBinder().read(MSMediaReceiverRegistrarService.class);
+      mss.setManager(new DefaultServiceManager<MSMediaReceiverRegistrarService>(mss, MSMediaReceiverRegistrarService.class));
 
       Icon icon = null;
       try {
@@ -167,7 +192,7 @@ public class Upnp {
         }
       }
 
-      this.localDevice = new LocalDevice(identity, type, details, new Icon[] { icon }, new LocalService[] { cds, cms });
+      this.localDevice = new LocalDevice(identity, type, details, new Icon[] { icon }, new LocalService[] { cds, cms, mss });
     }
 
     return this.localDevice;

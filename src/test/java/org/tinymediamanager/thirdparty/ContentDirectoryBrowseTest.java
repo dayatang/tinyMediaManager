@@ -42,6 +42,19 @@ public class ContentDirectoryBrowseTest extends BasicTest {
     return TvShowList.getInstance().getTvShows().get(0).getDbId().toString();
   }
 
+  @Test
+  public void validator() throws ContentDirectoryException {
+    CDS.browse("0", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1/" + getUUID("Another"), BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+  }
+
   // =====================================================
   // directory browsing
   // =====================================================
@@ -69,6 +82,11 @@ public class ContentDirectoryBrowseTest extends BasicTest {
   // meta data information
   // =====================================================
   @Test
+  public void metadataRootContainer() throws ContentDirectoryException {
+    browse("0", BrowseFlag.METADATA);
+  }
+
+  @Test
   public void metadataMovie() throws ContentDirectoryException {
     browse("1/" + getValidMovieID(), BrowseFlag.METADATA);
   }
@@ -81,11 +99,6 @@ public class ContentDirectoryBrowseTest extends BasicTest {
   // =====================================================
   // INVALID exception tests
   // =====================================================
-  @Test(expected = ContentDirectoryException.class)
-  public void metadataRootContainer() throws ContentDirectoryException {
-    browse("0", BrowseFlag.METADATA);
-  }
-
   @Test(expected = ContentDirectoryException.class)
   public void metadataMovieContainer() throws ContentDirectoryException {
     browse("1", BrowseFlag.METADATA);
