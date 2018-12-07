@@ -37,17 +37,14 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
 
   public ContentDirectoryService() {
     super();
-    System.out.println("1");
   }
 
   public ContentDirectoryService(List<String> searchCapabilities, List<String> sortCapabilities, PropertyChangeSupport propertyChangeSupport) {
     super(searchCapabilities, sortCapabilities, propertyChangeSupport);
-    System.out.println("2");
   }
 
   public ContentDirectoryService(List<String> searchCapabilities, List<String> sortCapabilities) {
     super(searchCapabilities, sortCapabilities);
-    System.out.println("3");
   }
 
   private static final Logger         LOGGER = LoggerFactory.getLogger(ContentDirectoryService.class);
@@ -106,7 +103,7 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
             }
           }
           else {
-            // just "movies" metadata
+            // just "movies" container
             cont.setId(Upnp.ID_MOVIES);
             cont.setParentID(Upnp.ID_ROOT);
             cont.setTitle(BUNDLE.getString("tmm.movies"));
@@ -125,7 +122,7 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
             }
           }
           else {
-            // just show metadata
+            // just show container
             cont.setId(Upnp.ID_TVSHOWS);
             cont.setParentID(Upnp.ID_ROOT);
             cont.setTitle(BUNDLE.getString("tmm.tvshows"));
@@ -166,19 +163,21 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
           return returnResult(didl);
         }
         else if (path[0].equals(Upnp.ID_MOVIES)) {
-          // create MOVIE folder structure -> items
-          List<org.tinymediamanager.core.movie.entities.Movie> tmmMovies = MovieList.getInstance().getMovies();
-          Collections.sort(tmmMovies, new DynaComparator(orderMovie));
-          int i = 0;
-          for (org.tinymediamanager.core.movie.entities.Movie m : tmmMovies) {
-            if (maxResults == 0 || i < maxResults) {
-              StorageFolder cont = new StorageFolder();
-              cont.setId(Upnp.ID_MOVIES + "/" + m.getDbId());
-              cont.setParentID(Upnp.ID_ROOT);
-              cont.setTitle(m.getTitle());
-              cont.setChildCount(1);
-              didl.addContainer(cont);
-              i++;
+          // children of item is always empty
+          if (path.length == 1) {
+            // create MOVIE folder structure -> items
+            List<org.tinymediamanager.core.movie.entities.Movie> tmmMovies = MovieList.getInstance().getMovies();
+            Collections.sort(tmmMovies, new DynaComparator(orderMovie));
+            int i = 0;
+            for (org.tinymediamanager.core.movie.entities.Movie m : tmmMovies) {
+              if (firstResult > 0) {
+                firstResult--;
+                continue;
+              }
+              if (maxResults == 0 || i < maxResults) {
+                didl.addItem(Metadata.getUpnpMovie(m, false));
+                i++;
+              }
             }
           }
           return returnResult(didl);
@@ -191,7 +190,11 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
             Collections.sort(tmmShows, new DynaComparator(orderShow));
             int i = 0;
             for (org.tinymediamanager.core.tvshow.entities.TvShow t : tmmShows) {
-              if (i < maxResults) {
+              if (firstResult > 0) {
+                firstResult--;
+                continue;
+              }
+              if (maxResults == 0 || i < maxResults) {
                 cont = new StorageFolder();
                 cont.setId(Upnp.ID_TVSHOWS + "/" + t.getDbId());
                 cont.setParentID(Upnp.ID_ROOT);
@@ -201,7 +204,6 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
               }
               i++;
             }
-            return returnResult(didl);
           }
           else if (path.length == 2) {
             // create EPISODE items
@@ -210,17 +212,18 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
             if (show != null) {
               int i = 0;
               for (TvShowEpisode ep : show.getEpisodes()) {
-                if (i < maxResults) {
+                if (firstResult > 0) {
+                  firstResult--;
+                  continue;
+                }
+                if (maxResults == 0 || i < maxResults) {
                   didl.addItem(Metadata.getUpnpTvShowEpisode(show, ep, false));
                 }
                 i++;
               }
-              return returnResult(didl);
-            }
-            else {
-              throw new ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT, "cannot get metadata for " + objectID);
             }
           }
+          return returnResult(didl);
         }
         else {
           LOGGER.warn("Whoops. There was an error in our directory structure. " + objectID);
