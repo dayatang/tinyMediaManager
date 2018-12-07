@@ -115,10 +115,29 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
             // single show
             org.tinymediamanager.core.tvshow.entities.TvShow t = TvShowList.getInstance().lookupTvShow(UUID.fromString(path[1]));
             if (t != null) {
-              TvShowEpisode ep = t.getEpisode(getInt(path[2]), getInt(path[3]));
-              if (ep != null) {
-                didl.addItem(Metadata.getUpnpTvShowEpisode(t, ep, true));
+
+              if (path.length == 4) {
+                // Episode ITEM listing
+                TvShowEpisode ep = t.getEpisode(getInt(path[2]), getInt(path[3]));
+                if (ep != null) {
+                  didl.addItem(Metadata.getUpnpTvShowEpisode(t, ep, true));
+                }
               }
+              else if (path.length == 3) {
+                // Season CONTAINER listing..../...UID........./...S
+                cont.setId(Upnp.ID_TVSHOWS + "/" + path[1] + "/" + path[2]);
+                cont.setParentID(Upnp.ID_TVSHOWS + "/" + path[1]);
+                cont.setTitle(BUNDLE.getString("metatag.season") + " " + path[2]);
+                didl.addContainer(cont);
+              }
+              else if (path.length == 2) {
+                // Show CONTAINER listing..../...UID
+                cont.setId(Upnp.ID_TVSHOWS + "/" + path[1]);
+                cont.setParentID(Upnp.ID_TVSHOWS);
+                cont.setTitle(t.getTitle());
+                didl.addContainer(cont);
+              }
+
             }
           }
           else {
@@ -239,10 +258,9 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
 
   private BrowseResult returnResult(DIDLContent didl) throws Exception {
     DIDLParser dip = new DIDLParser();
-    int count = didl.getItems().size() + didl.getContainers().size();
     String ret = dip.generate(didl);
     LOGGER.debug(prettyFormat(ret, 2));
-    return new BrowseResult(ret, count, count);
+    return new BrowseResult(ret, didl.getCount(), didl.getCount());
   }
 
   private int getInt(String s) {

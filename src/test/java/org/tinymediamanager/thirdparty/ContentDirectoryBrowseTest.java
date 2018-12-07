@@ -14,8 +14,10 @@
  */
 package org.tinymediamanager.thirdparty;
 
+import org.fourthline.cling.model.types.UnsignedIntegerFourBytes;
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException;
 import org.fourthline.cling.support.model.BrowseFlag;
+import org.fourthline.cling.support.model.BrowseResult;
 import org.fourthline.cling.support.model.SortCriterion;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -52,7 +54,23 @@ public class ContentDirectoryBrowseTest extends BasicTest {
     CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
     CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
 
-    CDS.browse("1/" + getUUID("Another"), BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("2", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("2", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("2", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("2/" + getUUID("UPNPShow3"), BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // show
+    CDS.browse("2/" + getUUID("UPNPShow3") + "/1", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // episode
+    CDS.browse("2/" + getUUID("UPNPShow3") + "/1/2", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // season
+
+    CDS.browse("2/" + getUUID("UPNPShow3"), BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // show
+    CDS.browse("2/" + getUUID("UPNPShow3") + "/1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // episode
+    CDS.browse("2/" + getUUID("UPNPShow3") + "/1/2", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // season
+
+    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("0", "BrowseDirectChildren", "*", new UnsignedIntegerFourBytes(0), new UnsignedIntegerFourBytes(0), "");
+
+    CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 1, 0, SortCriterion.valueOf(""));
   }
 
   // =====================================================
@@ -97,42 +115,47 @@ public class ContentDirectoryBrowseTest extends BasicTest {
   }
 
   // =====================================================
-  // INVALID exception tests
+  // INVALID exception tests / empty responses!
   // =====================================================
-  @Test(expected = ContentDirectoryException.class)
+  @Test
   public void metadataMovieContainer() throws ContentDirectoryException {
-    browse("1", BrowseFlag.METADATA);
+    BrowseResult r = browse("1", BrowseFlag.METADATA);
+    assertEqual(Long.valueOf(1), r.getCountLong());
   }
 
-  @Test(expected = ContentDirectoryException.class)
+  @Test
   public void metadataTvShowContainer() throws ContentDirectoryException {
-    browse("2", BrowseFlag.METADATA);
+    BrowseResult r = browse("2", BrowseFlag.METADATA);
+    assertEqual(Long.valueOf(1), r.getCountLong());
   }
 
-  @Test(expected = ContentDirectoryException.class)
+  @Test
   public void invalidMovieUUID() throws ContentDirectoryException {
-    browse("1/00000000-0000-0000-0000-000000000000", BrowseFlag.METADATA);
+    BrowseResult r = browse("1/00000000-0000-0000-0000-000000000000", BrowseFlag.METADATA);
+    assertEqual(Long.valueOf(0), r.getCountLong());
   }
 
-  @Test(expected = ContentDirectoryException.class)
+  @Test
   public void invalidShowUUID() throws ContentDirectoryException {
-    browse("2/00000000-0000-0000-0000-000000000000/1/2", BrowseFlag.METADATA);
+    BrowseResult r = browse("2/00000000-0000-0000-0000-000000000000/1/2", BrowseFlag.METADATA);
+    assertEqual(Long.valueOf(0), r.getCountLong());
   }
 
-  @Test(expected = ContentDirectoryException.class)
+  @Test
   public void invalidEpisodeSE() throws ContentDirectoryException {
-    browse("2/" + getValidShowID() + "/10/20", BrowseFlag.METADATA);
+    BrowseResult r = browse("2/" + getValidShowID() + "/10/20", BrowseFlag.METADATA);
+    assertEqual(Long.valueOf(0), r.getCountLong());
   }
 
-  private void browse(String s, BrowseFlag b) throws ContentDirectoryException {
-    CDS.browse(s, b, "", 0, 200, SortCriterion.valueOf("+dc:date,+dc:title"));
+  private BrowseResult browse(String s, BrowseFlag b) throws ContentDirectoryException {
+    return CDS.browse(s, b, "", 0, 200, SortCriterion.valueOf("+dc:date,+dc:title"));
   }
 
   @BeforeClass
   public static void init() throws Exception {
     setTraceLogging();
     deleteSettingsFolder();
-    Settings.getInstance(getSettingsFolder());
+    Settings.getInstance(getSettingsFolder() + "1");
 
     TmmModuleManager.getInstance().startUp();
     MovieModuleManager.getInstance().startUp();
