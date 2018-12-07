@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tinymediamanager.core.Constants;
 import org.tinymediamanager.core.MediaFileType;
+import org.tinymediamanager.core.movie.MovieList;
 import org.tinymediamanager.core.movie.entities.Movie;
 import org.tinymediamanager.core.movie.entities.MovieActor;
 import org.tinymediamanager.core.movie.entities.MovieSet;
@@ -333,8 +334,7 @@ public class VSMeta {
                   case "themoviedb":
                     try {
                       int t = Integer.parseInt(value);
-                      movieSet = new MovieSet();
-                      movieSet.setTmdbId(t);
+                      movieSet = MovieList.getInstance().getMovieSet(title1 + "_col", t);
                     }
                     catch (NumberFormatException e) {
                     }

@@ -47,7 +47,7 @@ public class DonateAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    String url = StringEscapeUtils.unescapeHtml4("http://tinymediamanager.org/donate.php");
+    String url = StringEscapeUtils.unescapeHtml4("https://www.tinymediamanager.org/donate");
     try {
       TmmUIHelper.browseUrl(url);
     }

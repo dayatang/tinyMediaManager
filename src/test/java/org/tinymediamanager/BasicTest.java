@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,7 @@ public class BasicTest {
 
   public static void createFakeMovie(String title) {
     Movie movie = new Movie();
+    movie.setDbId(getUUID(title)); // fixate
 
     movie.setTitle(title);
     movie.setPath("/media/movies/" + title);
@@ -166,11 +168,12 @@ public class BasicTest {
 
     MovieList.getInstance().addMovie(movie);
     movie.saveToDb();
-    System.out.println("Created movie " + movie.getDbId());
+    System.out.println("Created movie " + movie.getDbId() + " (" + movie.getTitle() + ")");
   }
 
   public static void createFakeShow(String title) {
     TvShow tvShow = new TvShow();
+    tvShow.setDbId(getUUID(title)); // fixate
 
     tvShow.setTitle(title);
     tvShow.setPath("/media/tvshows/" + title);
@@ -237,7 +240,10 @@ public class BasicTest {
 
     TvShowList.getInstance().addTvShow(tvShow);
     tvShow.saveToDb();
-    System.out.println("Created show " + tvShow.getDbId());
+    System.out.println("Created show " + tvShow.getDbId() + " (" + tvShow.getTitle() + ")");
   }
 
+  public static UUID getUUID(String uuid) {
+    return UUID.nameUUIDFromBytes(uuid.getBytes());
+  }
 }

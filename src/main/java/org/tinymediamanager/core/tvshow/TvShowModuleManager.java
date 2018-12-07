@@ -38,7 +38,6 @@ import org.tinymediamanager.core.tvshow.entities.TvShow;
 import org.tinymediamanager.core.tvshow.entities.TvShowEpisode;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -150,19 +149,14 @@ public class TvShowModuleManager implements ITmmModule {
    *          the TV show to dump the data for
    */
   public void dump(TvShow tvshow) {
-    try {
-      JSONObject show = new JSONObject(tvShowObjectWriter.writeValueAsString(tvshow));
-      JSONArray episodes = new JSONArray();
-      for (TvShowEpisode ep : tvshow.getEpisodes()) {
-        JSONObject epJson = new JSONObject(episodeObjectWriter.writeValueAsString(ep));
-        episodes.put(epJson);
-      }
-      show.put("episodes", episodes);
-      LOGGER.info("Dumping TvShow:\n" + show.toString(4));
+    JSONObject show = new JSONObject(tvShowMap.get(tvshow.getDbId()));
+    JSONArray episodes = new JSONArray();
+    for (TvShowEpisode ep : tvshow.getEpisodes()) {
+      JSONObject epJson = new JSONObject(episodeMap.get(ep.getDbId()));
+      episodes.put(epJson);
     }
-    catch (JsonProcessingException e) {
-      LOGGER.error("Cannot parse JSON!", e);
-    }
+    show.put("episodes", episodes);
+    LOGGER.info("Dumping TvShow: {}\n{}", tvshow.getDbId(), show.toString(4));
   }
 
   void persistTvShow(TvShow tvShow) throws Exception {

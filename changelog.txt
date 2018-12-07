@@ -18,6 +18,9 @@ x fixed subtitle search dialog
 x fixed Trakt.tv, updating local NFOs even when no changes
 x fixed IMDB release date parsing
 x allow moving of symlinks #410
+x fixed crash on weird language extensions #425
+x fixed MovieSets #366
+
 
 Version 2.9.13
 =======================

@@ -110,7 +110,7 @@ public class Metadata {
     try {
       // 2/UUID/S/E
       m.setId(Upnp.ID_TVSHOWS + "/" + show.getDbId().toString() + "/" + ep.getSeason() + "/" + ep.getEpisode());
-      m.setParentID(Upnp.ID_TVSHOWS + "/" + show.getDbId().toString());
+      m.setParentID(Upnp.ID_TVSHOWS + "/" + show.getDbId().toString() + "/" + ep.getSeason());
       if (!ep.getYear().isEmpty()) {
         m.addProperty(new DC.DATE(ep.getYear())); // no setDate on Movie (but on other items)???
       }
@@ -118,7 +118,8 @@ public class Metadata {
 
       for (MediaFile mf : ep.getMediaFiles(MediaFileType.VIDEO)) {
         String rel = show.getPathNIO().relativize(mf.getFileAsPath()).toString().replaceAll("\\\\", "/");
-        String url = "http://" + Upnp.IP + ":8008/upnp/tvshows/" + show.getDbId().toString() + "/" + URLEncoder.encode(rel, "UTF-8");
+        String url = "http://" + Upnp.IP + ":" + Upnp.WEBSERVER_PORT + "/upnp/tvshows/" + show.getDbId().toString() + "/"
+            + URLEncoder.encode(rel, "UTF-8");
         Res r = new Res(MimeTypes.getMimeType(mf.getExtension()), mf.getFilesize(), url);
         m.addResource(r);
       }

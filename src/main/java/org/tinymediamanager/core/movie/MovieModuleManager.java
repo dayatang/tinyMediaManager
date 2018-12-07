@@ -37,7 +37,6 @@ import org.tinymediamanager.core.movie.entities.Movie;
 import org.tinymediamanager.core.movie.entities.MovieSet;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -149,13 +148,8 @@ public class MovieModuleManager implements ITmmModule {
    *          the movie to make the dump for
    */
   public void dump(Movie movie) {
-    try {
-      JSONObject jsonObject = new JSONObject(movieObjectWriter.writeValueAsString(movie));
-      LOGGER.info("Dumping Movie:\n" + jsonObject.toString(4));
-    }
-    catch (JsonProcessingException e) {
-      LOGGER.error("Cannot parse JSON!", e);
-    }
+    JSONObject jsonObject = new JSONObject(movieMap.get(movie.getDbId()));
+    LOGGER.info("Dumping Movie: {}\n{}", movie.getDbId(), jsonObject.toString(4));
   }
 
   /**
@@ -165,13 +159,8 @@ public class MovieModuleManager implements ITmmModule {
    *          the movieset to make the dump for
    */
   public void dump(MovieSet movieSet) {
-    try {
-      JSONObject jsonObject = new JSONObject(movieSetObjectWriter.writeValueAsString(movieSet));
-      LOGGER.info("Dumping MovieSet:\n" + jsonObject.toString(4));
-    }
-    catch (JsonProcessingException e) {
-      LOGGER.error("Cannot parse JSON!", e);
-    }
+    JSONObject jsonObject = new JSONObject(movieSetMap.get(movieSet.getDbId()));
+    LOGGER.info("Dumping MovieSet: {}\n{}", movieSet.getDbId(), jsonObject.toString(4));
   }
 
   void persistMovie(Movie movie) throws Exception {
@@ -190,7 +179,7 @@ public class MovieModuleManager implements ITmmModule {
 
   void persistMovieSet(MovieSet movieSet) throws Exception {
     String newValue = movieSetObjectWriter.writeValueAsString(movieSet);
-    String oldValue = movieMap.get(movieSet.getDbId());
+    String oldValue = movieSetMap.get(movieSet.getDbId());
     if (!StringUtils.equals(newValue, oldValue)) {
       movieSetMap.put(movieSet.getDbId(), newValue);
     }
