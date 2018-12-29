@@ -70,6 +70,7 @@ public class MovieSettings extends AbstractModelObject {
   private final static String             MOVIE_RENAMER_FILENAME                   = "movieRenamerFilename";
   private final static String             MOVIE_RENAMER_SPACE_SUBSTITUTION         = "movieRenamerSpaceSubstitution";
   private final static String             MOVIE_RENAMER_SPACE_REPLACEMENT          = "movieRenamerSpaceReplacement";
+  private final static String             MOVIE_RENAMER_COLON_REPLACEMENT          = "movieRenamerColonReplacement";
   private final static String             MOVIE_RENAMER_NFO_CLEANUP                = "movieRenamerNfoCleanup";
   private final static String             MOVIE_RENAMER_MOVIESET_SINGLE_MOVIE      = "movieRenamerMoviesetSingleMovie";
   private final static String             MOVIE_SCRAPER                            = "movieScraper";
@@ -471,10 +472,13 @@ public class MovieSettings extends AbstractModelObject {
     return movieRenamerSpaceReplacement;
   }
 
-  public void setMovieRenamerSpaceReplacement(String movieRenamerSpaceReplacement) {
-    this.movieRenamerSpaceReplacement = movieRenamerSpaceReplacement;
+  public void setMovieRenamerSpaceReplacement(String newValue) {
+    String oldValue = this.movieRenamerSpaceReplacement;
+    this.movieRenamerSpaceReplacement = newValue;
+    firePropertyChange(MOVIE_RENAMER_SPACE_REPLACEMENT, oldValue, newValue);
   }
 
+  @XmlElement(name = MOVIE_RENAMER_COLON_REPLACEMENT)
   public String getMovieRenamerColonReplacement() {
     return movieRenamerColonReplacement;
   }
@@ -482,7 +486,7 @@ public class MovieSettings extends AbstractModelObject {
   public void setMovieRenamerColonReplacement(String newValue) {
     String oldValue = this.movieRenamerColonReplacement;
     this.movieRenamerColonReplacement = newValue;
-    firePropertyChange("movieRenamerColonReplacement", oldValue, newValue);
+    firePropertyChange(MOVIE_RENAMER_COLON_REPLACEMENT, oldValue, newValue);
   }
 
   public String getMovieScraper() {
@@ -733,7 +737,6 @@ public class MovieSettings extends AbstractModelObject {
     this.includeExternalAudioStreams = newValue;
     firePropertyChange(INCLUDE_EXTERNAL_AUDIO_STREAMS, oldValue, newValue);
   }
-
 
   public boolean isAsciiReplacement() {
     return asciiReplacement;
