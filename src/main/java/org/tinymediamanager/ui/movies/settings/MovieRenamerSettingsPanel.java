@@ -315,9 +315,9 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     cbSubtitleLanguage.setSelectedItem(settings.getMovieRenamerLanguageStyle());
 
     // examples
-    exampleEventList.add(new MovieRenamerExample("$4"));
     exampleEventList.add(new MovieRenamerExample("$T"));
     exampleEventList.add(new MovieRenamerExample("$O"));
+    exampleEventList.add(new MovieRenamerExample("$4"));
     exampleEventList.add(new MovieRenamerExample("$1"));
     exampleEventList.add(new MovieRenamerExample("$E"));
     exampleEventList.add(new MovieRenamerExample("$2"));
