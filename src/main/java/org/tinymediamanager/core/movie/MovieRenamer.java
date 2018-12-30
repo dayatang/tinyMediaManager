@@ -1158,6 +1158,9 @@ public class MovieRenamer {
           ret = "HDR";
         }
         break;
+      case "$4":
+        ret = movie.getSortTitle();
+        break;
       default:
         break;
     }

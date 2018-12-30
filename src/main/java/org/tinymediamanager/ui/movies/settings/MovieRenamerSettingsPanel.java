@@ -161,6 +161,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
       public void changedUpdate(DocumentEvent arg0) {
         createRenamerExample();
       }
+      
     });
 
     JLabel lblMoviePath = new JLabel(BUNDLE.getString("Settings.renamer.folder")); //$NON-NLS-1$
@@ -314,6 +315,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     cbSubtitleLanguage.setSelectedItem(settings.getMovieRenamerLanguageStyle());
 
     // examples
+    exampleEventList.add(new MovieRenamerExample("$4"));
     exampleEventList.add(new MovieRenamerExample("$T"));
     exampleEventList.add(new MovieRenamerExample("$O"));
     exampleEventList.add(new MovieRenamerExample("$1"));
