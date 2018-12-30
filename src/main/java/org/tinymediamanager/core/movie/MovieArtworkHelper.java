@@ -756,7 +756,9 @@ public class MovieArtworkHelper {
         }
       }
     }
-    else {
+
+    if (foundPoster == null) {
+      // nothing found or language has no preference
       // size has priority over language
       for (MediaArtwork art : artwork) {
         // only get artwork in desired resolution
@@ -821,8 +823,9 @@ public class MovieArtworkHelper {
         }
       }
     }
-    else {
-      // size has priority over language
+
+    if (foundfanart == null) {
+      // nothing found or language has no preference
       for (MediaArtwork art : artwork) {
         // only get artwork in desired resolution
         if (art.getType() == MediaArtworkType.BACKGROUND && art.getSizeOrder() == preferredSizeOrder) {
