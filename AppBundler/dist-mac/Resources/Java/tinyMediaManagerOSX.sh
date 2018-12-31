@@ -36,7 +36,7 @@ export LC_ALL="en_US.UTF-8"
 
 # search for the right JVM - priority is java 8
 if [ -x /usr/libexec/java_home ]; then
-  JAVA_HOME="`/usr/libexec/java_home -v 1.8 -F`"
+  JAVA_HOME="`/usr/libexec/java_home -v 1.8+ -F`"
   export JAVA_HOME
 fi
 
@@ -49,10 +49,10 @@ JAVACMD="${JAVA_HOME}/bin/java"
 if [ ! -f "$JAVACMD" -o ! -x "$JAVACMD" ]; then
   # display error message with applescript
   osascript -e "tell application \"System Events\" to display dialog \"ERROR launching tinyMediaManager!\n\nYou need to have JAVA installed on your Mac!\nVisit http://java.com for more information...\" with title \"tinyMediaManager\" buttons {\" OK \"} default button 1 with icon path to resource \"tmm.icns\" in bundle (path to me)"
-  
+
   # and open java.com
   open http://java.com
-  
+
   # exit with error
   exit 1
 fi
@@ -68,4 +68,4 @@ fi
 ARGS="$ARGS -Djava.net.preferIPv4Stack=true -Dappbase=http://www.tinymediamanager.org/"
 
 # execute it :)
-exec "$JAVACMD" ${ARGS} -jar getdown.jar .      
+exec "$JAVACMD" ${ARGS} -jar getdown.jar .
