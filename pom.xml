@@ -88,7 +88,7 @@
         <dependency>
             <groupId>org.tinymediamanager.plugins</groupId>
             <artifactId>scraper-kodi</artifactId>
-            <version>1.12</version>
+            <version>1.13-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
