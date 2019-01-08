@@ -4,6 +4,7 @@ Version 2.9.15
 + added XLARGE (2160p) fanart support for tmdb
 + added XLARGE (2000x3000px) poster support for tmdb
 x fixed loading of colon replacement for movies
+x fixed storing of several options in the TV show renamer
 
 Version 2.9.14
 =======================

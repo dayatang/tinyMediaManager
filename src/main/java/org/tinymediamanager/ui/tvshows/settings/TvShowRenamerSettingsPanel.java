@@ -207,13 +207,11 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
     tfEpisodeFilename.getDocument().addDocumentListener(documentListener);
 
     chckbxAsciiReplacement = new JCheckBox(BUNDLE.getString("Settings.renamer.asciireplacement")); //$NON-NLS-1$
-    chckbxAsciiReplacement.addActionListener(renamerActionListener);
     panelRenamer.add(chckbxAsciiReplacement, "2, 15, 9, 1");
 
     chckbxSpaceReplacement = new JHintCheckBox(BUNDLE.getString("Settings.movie.renamer.spacesubstitution")); //$NON-NLS-1$
     chckbxSpaceReplacement.setHintIcon(IconManager.HINT);
     chckbxSpaceReplacement.setToolTipText(BUNDLE.getString("Settings.tvshowspacereplacement.hint")); //$NON-NLS-1$
-    chckbxSpaceReplacement.addActionListener(renamerActionListener);
     {
       final JLabel lblDefaultEpisodeFilename = new JLabel("$N - S$2E$E - $T"); //$NON-NLS-1$
       TmmFontHelper.changeFont(lblDefaultEpisodeFilename, 0.833);
@@ -223,7 +221,6 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
 
     cbSpaceReplacement = new JComboBox(spaceReplacement.toArray());
     panelRenamer.add(cbSpaceReplacement, "4, 11, fill, default");
-    cbSpaceReplacement.addActionListener(renamerActionListener);
 
     lblColonReplacement = new JLabel(BUNDLE.getString("Settings.tvshow.renamer.colonreplacement"));
     lblColonReplacement.setToolTipText(BUNDLE.getString("Settings.tvshow.renamer.colonreplacement.hint"));
@@ -231,7 +228,6 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
 
     cbColonReplacement = new JComboBox(colonReplacement.toArray());
     panelRenamer.add(cbColonReplacement, "4, 13, fill, default");
-    cbColonReplacement.addActionListener(renamerActionListener);
 
     txtpntAsciiHint = new JTextPane();
     txtpntAsciiHint.setText(BUNDLE.getString("Settings.renamer.asciireplacement.hint")); //$NON-NLS-1$
@@ -321,6 +317,12 @@ public class TvShowRenamerSettingsPanel extends JPanel implements HierarchyListe
     exampleEventList.add(new TvShowRenamerExample("$S"));
     exampleEventList.add(new TvShowRenamerExample("$H"));
 
+
+    // at last, add action listeners
+    cbColonReplacement.addActionListener(renamerActionListener);
+    cbSpaceReplacement.addActionListener(renamerActionListener);
+    chckbxAsciiReplacement.addActionListener(renamerActionListener);
+    chckbxSpaceReplacement.addActionListener(renamerActionListener);
   }
 
   @Override
