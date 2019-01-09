@@ -133,7 +133,7 @@ public class Upnp {
       }
 
       // @formatter:off
-      DeviceDetails details = new DeviceDetails("tinyMediaManager (" + hostname + ")",
+      DeviceDetails details = new DeviceDetails("tinyMediaManager",
         new ManufacturerDetails("tinyMediaManager", "http://www.tinymediamanager.org/"),
         new ModelDetails("tinyMediaManager", "tinyMediaManager - Media Server", ReleaseInfo.getVersion()), 
         // @Namespace default /dev/<udn>/desc

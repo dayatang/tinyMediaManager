@@ -37,12 +37,22 @@ public class Metadata {
     LOGGER.trace(tmmMovie.getTitle());
     Movie m = new Movie();
     try {
-      m.setId(Upnp.ID_MOVIES + "/" + tmmMovie.getDbId().toString());
+      m.setId(tmmMovie.getDbId().toString());
       m.setParentID(Upnp.ID_MOVIES);
       if (!tmmMovie.getYear().isEmpty()) {
         m.addProperty(new DC.DATE(tmmMovie.getYear())); // no setDate on Movie (but on other items)???
       }
       m.setTitle(tmmMovie.getTitle());
+
+      List<MediaFile> posters = tmmMovie.getMediaFiles(MediaFileType.POSTER);
+      MediaFile poster = posters.isEmpty() ? null : posters.get(0);
+      if (poster != null) {
+        String rel = tmmMovie.getPathNIO().relativize(poster.getFileAsPath()).toString().replaceAll("\\\\", "/");
+        String url = "http://" + Upnp.IP + ":" + Upnp.WEBSERVER_PORT + "/upnp/movies/" + tmmMovie.getDbId().toString() + "/"
+            + URLEncoder.encode(rel, "UTF-8");
+        Res r = new Res(MimeTypes.getMimeType(poster.getExtension()), poster.getFilesize(), url);
+        m.addResource(r);
+      }
 
       for (MediaFile mf : tmmMovie.getMediaFiles(MediaFileType.VIDEO)) {
         String rel = tmmMovie.getPathNIO().relativize(mf.getFileAsPath()).toString().replaceAll("\\\\", "/");

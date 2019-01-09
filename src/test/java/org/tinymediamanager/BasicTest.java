@@ -201,8 +201,8 @@ public class BasicTest {
     episode.setTitle(title + "-EP");
     episode.setSeason(1);
     episode.setEpisode(2);
-    episode.setDvdSeason(3);
-    episode.setDvdEpisode(4);
+    episode.setDvdSeason(1);
+    episode.setDvdEpisode(2);
     episode.setTitle("Don't Pet the Teacher");
     episode.setYear("" + 1987);
     episode.setFirstAired("1987-04-26");
@@ -234,6 +234,7 @@ public class BasicTest {
     // EP MF poster
     mf = new MediaFile(Paths.get("target/test-classes/dummy-poster.jpg"), MediaFileType.THUMB);
     episode.addToMediaFiles(mf);
+    episode.saveToDb();
 
     tvShow.addEpisode(episode);
     // ========= EPISODE end =========

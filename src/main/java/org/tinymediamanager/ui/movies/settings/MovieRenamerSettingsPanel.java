@@ -161,6 +161,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
       public void changedUpdate(DocumentEvent arg0) {
         createRenamerExample();
       }
+      
     });
 
     JLabel lblMoviePath = new JLabel(BUNDLE.getString("Settings.renamer.folder")); //$NON-NLS-1$
@@ -171,13 +172,6 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
 
     cbSpaceReplacement = new JComboBox(spaceReplacement.toArray());
     panelRenamer.add(cbSpaceReplacement, "10, 4, fill, default");
-    cbSpaceReplacement.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        checkChanges();
-        createRenamerExample();
-      }
-    });
 
     lblDefault1T = new JLabel(BUNDLE.getString("Settings.default"));
     TmmFontHelper.changeFont(lblDefault1T, 0.833);
@@ -197,13 +191,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
 
     cbColonReplacement = new JComboBox(colonReplacement.toArray());
     panelRenamer.add(cbColonReplacement, "10, 6, fill, default");
-    cbColonReplacement.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        checkChanges();
-        createRenamerExample();
-      }
-    });
+
 
     lblMMDWarning = new JLabel(BUNDLE.getString("Settings.renamer.folder.warning")); //$NON-NLS-1$
     panelRenamer.add(lblMMDWarning, "2, 10, 11, 1");
@@ -329,6 +317,7 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     // examples
     exampleEventList.add(new MovieRenamerExample("$T"));
     exampleEventList.add(new MovieRenamerExample("$O"));
+    exampleEventList.add(new MovieRenamerExample("$4"));
     exampleEventList.add(new MovieRenamerExample("$1"));
     exampleEventList.add(new MovieRenamerExample("$E"));
     exampleEventList.add(new MovieRenamerExample("$2"));
@@ -350,6 +339,22 @@ public class MovieRenamerSettingsPanel extends JPanel implements HierarchyListen
     exampleEventList.add(new MovieRenamerExample("$U"));
     exampleEventList.add(new MovieRenamerExample("$K"));
     exampleEventList.add(new MovieRenamerExample("$H"));
+
+    cbSpaceReplacement.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        checkChanges();
+        createRenamerExample();
+      }
+    });
+
+    cbColonReplacement.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        checkChanges();
+        createRenamerExample();
+      }
+    });
   }
 
   private void buildAndInstallMovieArray() {

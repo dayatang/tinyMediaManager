@@ -45,14 +45,34 @@ public class ContentDirectoryBrowseTest extends BasicTest {
   }
 
   @Test
-  public void validator() throws ContentDirectoryException {
-    CDS.browse("0", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
-    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
-    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+  public void browseStructure() throws ContentDirectoryException {
+    CDS.browse("0", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // 1 result / full meta
+    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // list of needed meta
+    CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf("")); // list of needed meta (filtered for 1 result)
 
     CDS.browse("1", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
     CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
     CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1/t", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/t", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/t", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1/t/" + getUUID("AnotherMovie"), BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/t/" + getUUID("UPNPShow3"), BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/t/" + getUUID("UPNPShow3"), BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1/g", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/g", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/g", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1/g/Abenteuer", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/g/Abenteuer", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/g/Abenteuer", BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
+
+    CDS.browse("1/g/Abenteuer/" + getUUID("AnotherShow"), BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/g/Abenteuer/" + getUUID("UPNPShow3"), BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
+    CDS.browse("1/g/Abenteuer/" + getUUID("UPNPShow3"), BrowseFlag.DIRECT_CHILDREN, "*", 0, 1, SortCriterion.valueOf(""));
 
     CDS.browse("2", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf(""));
     CDS.browse("2", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
@@ -61,14 +81,14 @@ public class ContentDirectoryBrowseTest extends BasicTest {
     CDS.browse("2/" + getUUID("UPNPShow3"), BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // show
     CDS.browse("2/" + getUUID("UPNPShow3") + "/1", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // episode
     CDS.browse("2/" + getUUID("UPNPShow3") + "/1/2", BrowseFlag.METADATA, "*", 0, 0, SortCriterion.valueOf("")); // season
-
+    //
     CDS.browse("2/" + getUUID("UPNPShow3"), BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // show
     CDS.browse("2/" + getUUID("UPNPShow3") + "/1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // episode
     CDS.browse("2/" + getUUID("UPNPShow3") + "/1/2", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf("")); // season
-
+    //
     CDS.browse("0", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
     CDS.browse("0", "BrowseDirectChildren", "*", new UnsignedIntegerFourBytes(0), new UnsignedIntegerFourBytes(0), "");
-
+    //
     CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 0, 0, SortCriterion.valueOf(""));
     CDS.browse("1", BrowseFlag.DIRECT_CHILDREN, "*", 1, 0, SortCriterion.valueOf(""));
   }
@@ -155,7 +175,7 @@ public class ContentDirectoryBrowseTest extends BasicTest {
   public static void init() throws Exception {
     setTraceLogging();
     deleteSettingsFolder();
-    Settings.getInstance(getSettingsFolder() + "1");
+    Settings.getInstance(getSettingsFolder());
 
     TmmModuleManager.getInstance().startUp();
     MovieModuleManager.getInstance().startUp();
@@ -164,11 +184,12 @@ public class ContentDirectoryBrowseTest extends BasicTest {
     createFakeMovie("UPNPMovie3");
     createFakeMovie("UPNPMovie2");
     createFakeMovie("UPNPMovie1");
-    createFakeMovie("Another");
+    createFakeMovie("AnotherMovie");
+
     createFakeShow("UPNPShow3");
     createFakeShow("UPNPShow2");
     createFakeShow("UPNPShow1");
-    createFakeShow("Another");
+    createFakeShow("AnotherShow");
   }
 
   @AfterClass
