@@ -77,6 +77,42 @@ public class MovieSetArtworkHelper {
   }
 
   /**
+   * whenever a movie set is renamed, the artwork in the artwork folder must be renamed too
+   *
+   * @param movieSet
+   *          the movie set
+   */
+  public static void renameArtwork(MovieSet movieSet) {
+    String artworkFolder = MovieModuleManager.MOVIE_SETTINGS.getMovieSetArtworkFolder();
+    if (!MovieModuleManager.MOVIE_SETTINGS.isEnableMovieSetArtworkFolder() || StringUtils.isBlank(artworkFolder)) {
+      return;
+    }
+
+    List<MediaFile> cleanup = new ArrayList<>();
+    for (MediaFile mf : movieSet.getMediaFiles()) {
+      if (mf.isGraphic() && mf.getFile().getParent().endsWith(artworkFolder)) {
+        try {
+          String extension = FilenameUtils.getExtension(mf.getFilename());
+          String artworkFileName = MovieRenamer.replaceInvalidCharacters(movieSet.getTitle()) + "-" + mf.getType().name().toLowerCase(Locale.ROOT)
+              + "." + extension;
+          Path artworkFile = Paths.get(artworkFolder, artworkFileName);
+          Utils.moveFileSafe(mf.getFileAsPath(), artworkFile);
+
+          movieSet.addToMediaFiles(new MediaFile(artworkFile));
+          cleanup.add(mf);
+        }
+        catch (Exception e) {
+          LOGGER.error("could not rename movie set artwork: " + e.getMessage());
+        }
+      }
+    }
+
+    for (MediaFile mf : cleanup) {
+      movieSet.removeFromMediaFiles(mf);
+    }
+  }
+
+  /**
    * find and assign movie set artwork in the artwork folder
    * 
    * @param movieSet

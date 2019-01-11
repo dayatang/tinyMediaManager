@@ -615,6 +615,28 @@ public class MovieUpdateDatasourceTask2 extends TmmThreadPool {
       else if (mf.getType().equals(VIDEO)) {
         videoName = mf.getBasename();
       }
+      else if (mf.getType().equals(MediaFileType.UNKNOWN)) {
+        if (mf.getFilesize() < 1024 * 1024) {
+          // unknown file - only read if <1MB
+          try {
+
+            // read https://wiki.vuplus-support.org/index.php?title=VMC_-_Video_Music_Center files
+            // https://forum.kodi.tv/showthread.php?tid=339204
+            if (mf.getExtension().equalsIgnoreCase("vmc")) {
+              String txtFile = Utils.readFileToString(mf.getFileAsPath());
+              Pattern pattern = Pattern.compile("<tmdb>(\\d+)");
+              Matcher matcher = pattern.matcher(txtFile);
+              if (matcher.find()) {
+                int tmdb = Integer.parseInt(matcher.group(1));
+                movie.setTmdbId(tmdb);
+              }
+            }
+
+          }
+          catch (IOException e) {
+          }
+        }
+      }
     }
 
     if (movie.getTitle().isEmpty()) {

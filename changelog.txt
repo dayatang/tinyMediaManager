@@ -5,6 +5,8 @@ Version 2.9.15
 + added XLARGE (2000x3000px) poster support for tmdb
 x fixed loading of colon replacement for movies
 x fixed storing of several options in the TV show renamer
+x fixed some Java 9+ compatibility issues
+x rename movie set artwork in artwork folder after changing the title of the movie set
 
 Version 2.9.14
 =======================
