@@ -235,7 +235,7 @@ public class MovieExtraImageFetcher implements Runnable {
     Path folder = movie.getPathNIO().resolve("extrafanart");
     try {
       if (Files.isDirectory(folder)) {
-        Utils.deleteDirectoryRecursive(folder);
+        Utils.deleteDirectorySafely(folder, movie.getDataSource());
         movie.removeAllMediaFiles(MediaFileType.EXTRAFANART);
       }
       Files.createDirectory(folder);
@@ -311,7 +311,7 @@ public class MovieExtraImageFetcher implements Runnable {
     Path folder = movie.getPathNIO().resolve("extrathumbs");
     try {
       if (Files.isDirectory(folder)) {
-        Utils.deleteDirectoryRecursive(folder);
+        Utils.deleteDirectorySafely(folder, movie.getDataSource());
         movie.removeAllMediaFiles(MediaFileType.EXTRATHUMB);
       }
       Files.createDirectory(folder);
