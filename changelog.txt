@@ -3,6 +3,7 @@ Version 2.9.15
 + added sortTitle to the movie renamer patterns (thx @xsxiaosa)
 + added XLARGE (2160p) fanart support for tmdb
 + added XLARGE (2000x3000px) poster support for tmdb
++ added Vietnamese and Thai to scraper languages
 x fixed loading of colon replacement for movies
 x fixed storing of several options in the TV show renamer
 x fixed some Java 9+ compatibility issues
