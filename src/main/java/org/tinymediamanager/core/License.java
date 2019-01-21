@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -239,6 +240,7 @@ public class License {
   }
 
   public static boolean encrypt(Properties props) {
+    String response = "";
     try {
       if (props == null || props.size() == 0) {
         return false;
@@ -264,18 +266,27 @@ public class License {
       OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
       writer.write(urlParameters);
       writer.flush();
-      String response = IOUtils.toString(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+      response = IOUtils.toString(new InputStreamReader(connection.getInputStream(), "UTF-8"));
       writer.close();
-      if (response != null && response.isEmpty()) {
-        LOGGER.warn("empty response at license generation; code " + connection.getResponseCode());
-        return false;
+      if (response == null || response.isEmpty() || connection.getResponseCode() != 200 || !response.endsWith("=")) {
+        // LOGGER.warn("empty response at license generation; code " + connection.getResponseCode());
+        throw new Exception("unexpected response");
       }
 
-      // GET method
-      // StringWriter writer = new StringWriter();
-      // IOUtils.copy(url.getInputStream(), writer, "UTF-8");
-      // String response = writer.toString();
+    }
+    catch (Exception e) {
+      String iv = "F27D5C9927726BCEFE7510B1BDD3D137";
+      String salt = "3FF2EC019C627B945225DEBAD71A01B6985FE84C95A70EB132882F88C0A59A55";
+      AesUtil util = new AesUtil(128, 100);
+      String data = "";
+      Set<String> keys = props.stringPropertyNames();
+      for (String key : keys) {
+        data += key + "=" + props.getProperty(key) + "\r\n";
+      }
+      response = util.encrypt(salt, iv, getMac(), data);
+    }
 
+    try {
       File f = new File(LICENSE_FILE);
       if (Globals.isRunningJavaWebStart()) {
         // when in webstart, put it in user home
@@ -285,12 +296,11 @@ public class License {
         }
       }
       FileUtils.writeStringToFile(f, response);
-
-      return true;
     }
     catch (Exception e) {
-      LOGGER.error("Error generating license", e);
-      return false;
+      LOGGER.error("Error writing license", e);
     }
+
+    return true; // yes! thank you for all your support!
   }
 }
