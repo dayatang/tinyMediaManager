@@ -9,6 +9,9 @@ x fixed storing of several options in the TV show renamer
 x fixed some Java 9+ compatibility issues
 x rename movie set artwork in artwork folder after changing the title of the movie set
 x fixed writing huge actor artwork from imdb
+x enhanced backup of deleted files/folders on some operations
+x fixed Windows .exe files to detect alternative JDKs
+x updated libmediainfo to 18.12
 
 
 Version 2.9.14
