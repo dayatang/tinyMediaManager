@@ -900,12 +900,12 @@ public class Utils {
     // backup
     try {
       // create path
-      Path backup = Paths.get(ds.toAbsolutePath().toString(), Constants.BACKUP_FOLDER, ds.relativize(folder).toString());
+      Path backup = Paths.get(ds.toAbsolutePath().toString(), Constants.BACKUP_FOLDER, ds.relativize(folder).toString() + System.currentTimeMillis());
       if (!Files.exists(backup.getParent())) {
         Files.createDirectories(backup.getParent());
       }
       // overwrite backup file by deletion prior
-      deleteDirectoryRecursive(backup);
+      // deleteDirectoryRecursive(backup); // no, we have timestamped
       return moveDirectorySafe(folder, backup);
     }
     catch (IOException e) {

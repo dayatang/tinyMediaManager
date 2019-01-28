@@ -3,10 +3,16 @@ Version 2.9.15
 + added sortTitle to the movie renamer patterns (thx @xsxiaosa)
 + added XLARGE (2160p) fanart support for tmdb
 + added XLARGE (2000x3000px) poster support for tmdb
++ added Vietnamese and Thai to scraper languages
 x fixed loading of colon replacement for movies
 x fixed storing of several options in the TV show renamer
 x fixed some Java 9+ compatibility issues
 x rename movie set artwork in artwork folder after changing the title of the movie set
+x fixed writing huge actor artwork from imdb
+x enhanced backup of deleted files/folders on some operations
+x fixed Windows .exe files to detect alternative JDKs
+x updated libmediainfo to 18.12
+
 
 Version 2.9.14
 =======================
@@ -50,6 +56,7 @@ x corrected app version display on macOS
 x fixed some smaller issues on actor image handling
 x removed the zelluloid.de scraper (this service has been shut down)
 
+
 Version 2.9.12
 =======================
 x display Kodi scrapers at the end of the list
@@ -62,15 +69,18 @@ x fixed displaying of the artwork chooser window on macOS
 x further improved Kodi scrapers
 x fixed actor artwork urls from tvdb scraper
 
+
 Version 2.9.11
 =======================
 x added Ł and ł in the ascii replacer
 x changed tvdb API to version 2
 
+
 Version 2.9.10
 =======================
 + feature: Kodi plugins now able to download images (movies)
 x fixed registering donator version
+
 
 Version 2.9.9
 =======================
@@ -87,6 +97,7 @@ x fixed IMDB parsing from movie NFOs
 x improved IMDB scraping original titles
 x improved episode title detection (cleanup) 
 
+
 Version 2.9.8
 =======================
 + added frame rate from mediainfo
@@ -101,12 +112,14 @@ x added more java 9 compatibility options
 x fixed cancelling of actor image downloads
 x added 2160p to file name cleanup
 
+
 Version 2.9.7
 =======================
 + added DataTables export template - thx to @C. Janke
 x fixed the imdb scraper (imdb changed their web pages) - thx to @Grizzler89
 x fixed a parsing problem in the Kodi scraper
 x fixed movie renamer with animated posters
+
 
 Version 2.9.6
 =======================
@@ -126,6 +139,7 @@ x storing of episodes in special seasons (season 0) no more switches to season -
 x fix occassional crashes when writing objects to the database
 x fix audio codes parsing of audio files (thx @midgetspy)
 x fix renaming of movies with renamer token $2 and starting with umlauts
+
 
 Version 2.9.5
 =======================
