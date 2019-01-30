@@ -2108,6 +2108,10 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
       audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "AC3", acSearch);
     }
     if (audioCodec.isEmpty()) {
+      audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "AC-3", acSearch);
+      audioCodec = audioCodec.replaceAll("-", "");
+    }
+    if (audioCodec.isEmpty()) {
       audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "PCM", acSearch);
     }
 
@@ -2134,7 +2138,7 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
     if ("dts".equalsIgnoreCase(audioCodec) || "truehd".equalsIgnoreCase(audioCodec)) {
 
       // old 18.05 style
-      String audioAddition = getMediaInfo(StreamKind.Audio, streamNum, "Format_Profile");
+      String audioAddition = getMediaInfo(StreamKind.Audio, streamNum, "Format_Profile", "Format_profile");
       if (!audioAddition.isEmpty()) {
         if ("dts".equalsIgnoreCase(audioCodec)) {
           // <Format_Profile>X / MA / Core</Format_Profile>
@@ -2174,6 +2178,11 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
           audioCodec = "Atmos";
         }
       }
+    }
+
+    // STILL? use old format
+    if (audioCodec.isEmpty()) {
+      audioCodec = getMediaInfo(StreamKind.Audio, streamNum, "Format");
     }
 
     return audioCodec;

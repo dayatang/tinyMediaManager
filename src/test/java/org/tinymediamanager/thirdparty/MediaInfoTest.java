@@ -162,7 +162,7 @@ public class MediaInfoTest extends BasicTest {
       // first audio stream is AC-3 english/5.1
       MediaFileAudioStream audioStream = mf.getAudioStreams().get(0);
       assertThat(audioStream.getChannelsAsInt()).isEqualTo(8);
-      assertThat(audioStream.getCodec()).isEqualTo("DTSHD");
+      assertThat(audioStream.getCodec()).isEqualTo("DTSHD-MA");
       assertThat(audioStream.getLanguage()).isEqualTo("eng");
 
       assertThat(mf.getSubtitles().size()).isEqualTo(7);
@@ -188,7 +188,7 @@ public class MediaInfoTest extends BasicTest {
       // first audio stream is AC-3 english/5.1
       MediaFileAudioStream audioStream = mf.getAudioStreams().get(0);
       assertThat(audioStream.getChannelsAsInt()).isEqualTo(6);
-      assertThat(audioStream.getCodec()).isEqualTo("DTSHD");
+      assertThat(audioStream.getCodec()).isEqualTo("DTSHD-MA");
       assertThat(audioStream.getLanguage()).isEqualTo("deu");
 
       assertThat(mf.getSubtitles().size()).isEqualTo(3);
@@ -237,7 +237,7 @@ public class MediaInfoTest extends BasicTest {
       // first audio stream is AC-3 english/5.1
       MediaFileAudioStream audioStream = mf.getAudioStreams().get(0);
       assertThat(audioStream.getChannelsAsInt()).isEqualTo(2);
-      assertThat(audioStream.getCodec()).isEqualTo("MPEG1 Audio");
+      assertThat(audioStream.getCodec()).isEqualTo("MPEG Audio");
       assertThat(audioStream.getLanguage()).isEmpty();
 
       assertThat(mf.getSubtitles().size()).isEqualTo(0);
