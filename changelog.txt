@@ -1,6 +1,7 @@
 Version 2.9.16
 =======================
 x MediaInfo reworked their naming schema for audio codecs - adapted.
+x TMDB-scraper: do not accept empty IDs as perfect match
 
 
 Version 2.9.15
