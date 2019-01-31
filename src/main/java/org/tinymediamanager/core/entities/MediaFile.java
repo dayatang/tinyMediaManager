@@ -2114,6 +2114,9 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
     if (audioCodec.isEmpty()) {
       audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "PCM", acSearch);
     }
+    if (audioCodec.isEmpty()) {
+      audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "AAC", acSearch);
+    }
 
     // see https://github.com/MediaArea/MediaInfo/issues/286
     // since 18.08
