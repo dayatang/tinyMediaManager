@@ -2104,18 +2104,10 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
     if (audioCodec.isEmpty()) {
       audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "DTS", acSearch);
     }
+
+    // else just take format
     if (audioCodec.isEmpty()) {
-      audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "AC3", acSearch);
-    }
-    if (audioCodec.isEmpty()) {
-      audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "AC-3", acSearch);
-      audioCodec = audioCodec.replaceAll("-", "");
-    }
-    if (audioCodec.isEmpty()) {
-      audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "PCM", acSearch);
-    }
-    if (audioCodec.isEmpty()) {
-      audioCodec = getMediaInfoContains(StreamKind.Audio, streamNum, "AAC", acSearch);
+      audioCodec = getMediaInfo(StreamKind.Audio, streamNum, "Format");
     }
 
     // see https://github.com/MediaArea/MediaInfo/issues/286
@@ -2181,11 +2173,6 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
           audioCodec = "Atmos";
         }
       }
-    }
-
-    // STILL? use old format
-    if (audioCodec.isEmpty()) {
-      audioCodec = getMediaInfo(StreamKind.Audio, streamNum, "Format");
     }
 
     return audioCodec;
