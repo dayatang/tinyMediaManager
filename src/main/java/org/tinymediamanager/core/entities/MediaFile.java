@@ -2108,6 +2108,7 @@ public class MediaFile extends AbstractModelObject implements Comparable<MediaFi
     // else just take format
     if (audioCodec.isEmpty()) {
       audioCodec = getMediaInfo(StreamKind.Audio, streamNum, "Format");
+      audioCodec = audioCodec.replaceAll("\\p{Punct}", "");
     }
 
     // see https://github.com/MediaArea/MediaInfo/issues/286
