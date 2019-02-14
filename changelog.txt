@@ -1,8 +1,9 @@
 Version 2.9.16
 =======================
-x MediaInfo reworked their naming schema for audio codecs - adapted.
+x MediaInfo reworked their naming schema for audio codecs - please reload your media information where needed!
 x TMDB-scraper: do not accept empty IDs as perfect match
 x fixed movie renamer to compare paths case sensitive
+x fixed an issue of wrong file date calculation (MacOS)
 
 
 Version 2.9.15
