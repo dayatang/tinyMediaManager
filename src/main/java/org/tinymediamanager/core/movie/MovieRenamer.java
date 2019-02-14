@@ -227,7 +227,7 @@ public class MovieRenamer {
       newPathname = movie.getDataSource() + File.separator + newPathname;
       Path srcDir = movie.getPathNIO();
       Path destDir = Paths.get(newPathname);
-      if (!srcDir.toAbsolutePath().equals(destDir.toAbsolutePath())) {
+      if (!srcDir.toAbsolutePath().toString().equals(destDir.toAbsolutePath().toString())) {
 
         boolean newDestIsMultiMovieDir = false;
         // re-evaluate multiMovieDir based on renamer settings

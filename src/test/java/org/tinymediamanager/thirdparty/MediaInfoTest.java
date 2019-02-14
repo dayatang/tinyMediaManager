@@ -22,6 +22,63 @@ public class MediaInfoTest extends BasicTest {
   }
 
   @Test
+  public void testAudiofiles() {
+    MediaFile mf = new MediaFile(Paths.get("src/test/resources/samples/AAC-HE_LC_6ch.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("AAC");
+    assertThat(mf.getAudioChannels()).isEqualTo("6ch");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/AAC-HE_LC_8ch.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("AAC");
+    assertThat(mf.getAudioChannels()).isEqualTo("8ch");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/DTS-X.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("DTS-X");
+    assertThat(mf.getAudioChannels()).isEqualTo("8ch");
+    assertThat(mf.getAudioLanguage()).isEqualTo("eng");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/DTSHD-HRA.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("DTSHD-HRA");
+    assertThat(mf.getAudioChannels()).isEqualTo("8ch");
+    assertThat(mf.getAudioLanguage()).isEqualTo("eng");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/DTSHD-MA.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("DTSHD-MA");
+    assertThat(mf.getAudioChannels()).isEqualTo("8ch");
+    assertThat(mf.getAudioLanguage()).isEqualTo("eng");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/DTS.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("DTS");
+    assertThat(mf.getAudioChannels()).isEqualTo("6ch");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/TrueHD.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("TrueHD");
+    assertThat(mf.getAudioChannels()).isEqualTo("8ch");
+    assertThat(mf.getAudioLanguage()).isEqualTo("eng");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/TrueHD-Atmos.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("Atmos");
+    assertThat(mf.getAudioChannels()).isEqualTo("8ch");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/AC-3.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("AC3");
+    assertThat(mf.getAudioChannels()).isEqualTo("6ch");
+
+    mf = new MediaFile(Paths.get("src/test/resources/samples/PCM.mka"));
+    mf.gatherMediaInformation();
+    assertThat(mf.getAudioCodec()).isEqualTo("PCM");
+    assertThat(mf.getAudioChannels()).isEqualTo("6ch");
+  }
+
+  @Test
   public void testIsoXml() {
     // DVD ISO - old format
     try {
@@ -115,7 +172,7 @@ public class MediaInfoTest extends BasicTest {
       // first audio stream is AC-3 english/5.1
       MediaFileAudioStream audioStream = mf.getAudioStreams().get(0);
       assertThat(audioStream.getChannelsAsInt()).isEqualTo(8);
-      assertThat(audioStream.getCodec()).isEqualTo("DTSHD");
+      assertThat(audioStream.getCodec()).isEqualTo("DTSHD-MA");
       assertThat(audioStream.getLanguage()).isEqualTo("eng");
 
       assertThat(mf.getSubtitles().size()).isEqualTo(7);
@@ -141,7 +198,7 @@ public class MediaInfoTest extends BasicTest {
       // first audio stream is AC-3 english/5.1
       MediaFileAudioStream audioStream = mf.getAudioStreams().get(0);
       assertThat(audioStream.getChannelsAsInt()).isEqualTo(6);
-      assertThat(audioStream.getCodec()).isEqualTo("DTSHD");
+      assertThat(audioStream.getCodec()).isEqualTo("DTSHD-MA");
       assertThat(audioStream.getLanguage()).isEqualTo("deu");
 
       assertThat(mf.getSubtitles().size()).isEqualTo(3);
@@ -190,7 +247,7 @@ public class MediaInfoTest extends BasicTest {
       // first audio stream is AC-3 english/5.1
       MediaFileAudioStream audioStream = mf.getAudioStreams().get(0);
       assertThat(audioStream.getChannelsAsInt()).isEqualTo(2);
-      assertThat(audioStream.getCodec()).isEqualTo("MPEG1 Audio");
+      assertThat(audioStream.getCodec()).isEqualTo("MPEG Audio");
       assertThat(audioStream.getLanguage()).isEmpty();
 
       assertThat(mf.getSubtitles().size()).isEqualTo(0);
