@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.tinymediamanager.plugins</groupId>
             <artifactId>scraper-tmdb</artifactId>
-            <version>1.14-SNAPSHOT</version>
+            <version>1.14</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
