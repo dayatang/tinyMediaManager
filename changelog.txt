@@ -4,6 +4,7 @@ x MediaInfo reworked their naming schema for audio codecs - please reload your m
 x TMDB-scraper: do not accept empty IDs as perfect match
 x fixed movie renamer to compare paths case sensitive
 x fixed an issue of wrong file date calculation (MacOS)
+x fixed truncated text on the movie settings scrren #443
 
 
 Version 2.9.15
