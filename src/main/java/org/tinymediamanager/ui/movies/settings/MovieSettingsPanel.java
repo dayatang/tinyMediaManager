@@ -176,7 +176,7 @@ public class MovieSettingsPanel extends ScrollablePanel {
 
     chckbxImageCache = new JCheckBox(BUNDLE.getString("Settings.imagecacheimporthint")); //$NON-NLS-1$
     TmmFontHelper.changeFont(chckbxImageCache, 0.833);
-    panelGeneral.add(chckbxImageCache, "4, 10, 7, 1");
+    panelGeneral.add(chckbxImageCache, "4, 10, 9, 1");
 
     JLabel lblRuntimeFromMedia = new JLabel(BUNDLE.getString("Settings.runtimefrommediafile"));
     panelGeneral.add(lblRuntimeFromMedia, "2, 12, right, default");
@@ -197,7 +197,7 @@ public class MovieSettingsPanel extends ScrollablePanel {
     panelGeneral.add(lblAutomaticRename, "2, 18, right, default");
 
     chckbxRename = new JCheckBox(BUNDLE.getString("Settings.movie.automaticrename.desc")); //$NON-NLS-1$
-    panelGeneral.add(chckbxRename, "4, 18, 7, 1");
+    panelGeneral.add(chckbxRename, "4, 18, 9, 1");
 
     JLabel lblTraktTv = new JLabel(BUNDLE.getString("Settings.trakt"));//$NON-NLS-1$
     panelGeneral.add(lblTraktTv, "2, 20");
