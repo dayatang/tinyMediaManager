@@ -1,6 +1,7 @@
 Version 2.9.17
 =======================
 x fixed artwork loading from TVDB
+x fixed IMDB id lookup for TV shows (to provide more artwork for TV scraping)
 
 
 Version 2.9.16
