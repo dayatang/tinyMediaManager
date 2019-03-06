@@ -3,6 +3,7 @@ Version 2.9.17
 x fixed artwork loading from TVDB
 x fixed IMDB id lookup for TV shows (to provide more artwork for TV scraping)
 x fixed AniDb caching issues (to prevent getting banned - thx @soywiz)
+x fixed displaying of foreign certifications in the movie/TV show editor
 
 
 Version 2.9.16
