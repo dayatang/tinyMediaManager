@@ -53,7 +53,6 @@ import org.tinymediamanager.core.Message;
 import org.tinymediamanager.core.Message.MessageLevel;
 import org.tinymediamanager.core.MessageManager;
 import org.tinymediamanager.core.entities.MediaFile;
-import org.tinymediamanager.core.tvshow.TvShowModuleManager;
 import org.tinymediamanager.core.tvshow.entities.TvShow;
 import org.tinymediamanager.core.tvshow.entities.TvShowActor;
 import org.tinymediamanager.scraper.entities.Certification;
@@ -166,9 +165,17 @@ public class TvShowToXbmcNfoConnector {
     String tvdbid = tvShow.getIdAsString(Constants.TVDB);
     if (StringUtils.isNotBlank(tvdbid)) {
       xbmc.setId(tvdbid);
-      xbmc.episodeguide.url.cache = tvdbid + "-" + TvShowModuleManager.SETTINGS.getScraperLanguage().name() + ".xml";
-      xbmc.episodeguide.url.url = "http://www.thetvdb.com/api/1D62F2F90030C444/series/" + tvdbid + "/all/"
-          + TvShowModuleManager.SETTINGS.getScraperLanguage().name() + ".zip";
+      // API v2 - https://forum.kodi.tv/showthread.php?tid=323588
+      xbmc.episodeguide.url.post = "yes";
+      xbmc.episodeguide.url.cache = "auth.json";
+      xbmc.episodeguide.url.url = "https://api.thetvdb.com/login?{\"apikey\":\"439DFEBA9D3059C6\",\"id\":" + tvdbid
+          + "}|Content-Type=application/json";
+
+      // API v1
+      // xbmc.episodeguide.url.cache = tvdbid + "-" + TvShowModuleManager.SETTINGS.getScraperLanguage().name() + ".xml";
+      // xbmc.episodeguide.url.url = "http://www.thetvdb.com/api/1D62F2F90030C444/series/" + tvdbid + "/all/"
+      // + TvShowModuleManager.SETTINGS.getScraperLanguage().name() + ".zip";
+
       // was XML, changed to ZIP
       // see https://forum.kodi.tv/showthread.php?tid=142723&pid=2660524#pid2660524
       // Kodi v16/v17 also write .zip
@@ -534,6 +541,9 @@ public class TvShowToXbmcNfoConnector {
   static class EpisodeGuideUrl {
     @XmlAttribute
     String cache;
+
+    @XmlAttribute
+    String post;
 
     @XmlValue
     String url;

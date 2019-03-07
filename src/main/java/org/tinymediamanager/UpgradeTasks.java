@@ -671,6 +671,18 @@ public class UpgradeTasks {
         }
       }
     }
+
+    // upgrade to v2.9.17
+    if (StrgUtils.compareVersion(v, "2.9.17") < 0) {
+      LOGGER.info("Performing database upgrade tasks to version 2.9.14");
+      // rewriting TV show NFOs b/c of changed episodenguide url
+      for (TvShow show : TvShowList.getInstance().getTvShows()) {
+        if (!show.getIdAsString(Constants.TVDB).isEmpty()) {
+          show.writeNFO();
+        }
+      }
+    }
+
   }
 
   /**
