@@ -17,6 +17,7 @@ package org.tinymediamanager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +42,7 @@ import org.tinymediamanager.core.Constants;
 import org.tinymediamanager.core.MediaFileType;
 import org.tinymediamanager.core.MediaSource;
 import org.tinymediamanager.core.Settings;
+import org.tinymediamanager.core.TmmModuleManager;
 import org.tinymediamanager.core.Utils;
 import org.tinymediamanager.core.entities.MediaEntity;
 import org.tinymediamanager.core.entities.MediaFile;
@@ -61,7 +63,9 @@ import org.tinymediamanager.core.tvshow.TvShowModuleManager;
 import org.tinymediamanager.core.tvshow.entities.TvShow;
 import org.tinymediamanager.core.tvshow.entities.TvShowActor;
 import org.tinymediamanager.core.tvshow.entities.TvShowEpisode;
+import org.tinymediamanager.scraper.http.Url;
 import org.tinymediamanager.scraper.util.StrgUtils;
+import org.tinymediamanager.ui.MainWindow;
 
 import com.sun.jna.Platform;
 
@@ -767,6 +771,57 @@ public class UpgradeTasks {
     catch (Exception e) {
       LOGGER.warn("failed to cleanup native folder: " + e.getMessage());
     }
+  }
+
+  /**
+   * Starts the v2-to-v3 migration<br>
+   * Abort on any exception
+   * 
+   * @throws IOException
+   *           if we couldn't migrate all the needed files - you need to restart TMM
+   */
+  public static void migrateToV3() throws IOException {
+
+    // backup datasources to plain text file for easier xml->JSON migration
+    try {
+      Path ds = Paths.get("cache", "migv3movies.ds");
+      Files.write(ds, Settings.getInstance().getMovieSettings().getMovieDataSource(), StandardCharsets.UTF_8);
+      ds = Paths.get("cache", "migv3shows.ds");
+      Files.write(ds, Settings.getInstance().getTvShowSettings().getTvShowDataSource(), StandardCharsets.UTF_8);
+    }
+    catch (IOException e) {
+      LOGGER.warn("MIG: could not backup datasources");
+    }
+
+    // close databases
+    TmmModuleManager.getInstance().shutDown();
+
+    // last backup of old databases & settings
+    Utils.moveDirectorySafe(Paths.get("data"), Paths.get("data_old_v2"));
+
+    // download fresh V3 getdown file
+    String gdUrl = "";
+    Path gd = Paths.get("getdown.txt");
+    List<String> cont = Files.readAllLines(gd);
+    for (String line : cont) {
+      String[] kv = line.split("=");
+      if ("appbase".equals(kv[0].trim()) || "mirror".equals(kv[0].trim())) {
+        gdUrl = kv[1].trim();
+      }
+    }
+    if (!gdUrl.isEmpty()) {
+      gdUrl = gdUrl.replace("/v2", "/v3");
+      gdUrl += "/getdown.txt";
+    }
+    Url u = new Url(gdUrl);
+    boolean ok = u.download(gd);
+    if (!ok) {
+      // try to write minimalist file on our own.
+      Utils.writeStringToFile(gd, "appbase=" + gdUrl);
+    }
+
+    // start updater
+    MainWindow.getActiveInstance().closeTmmAndStart(Utils.getPBforTMMupdate());
   }
 
   /**
