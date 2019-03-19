@@ -65,6 +65,7 @@ import org.tinymediamanager.Globals;
 import org.tinymediamanager.core.Message;
 import org.tinymediamanager.core.Message.MessageLevel;
 import org.tinymediamanager.core.MessageManager;
+import org.tinymediamanager.core.MigrationTask;
 import org.tinymediamanager.core.TmmModuleManager;
 import org.tinymediamanager.core.UpdaterTask;
 import org.tinymediamanager.core.Utils;
@@ -338,10 +339,12 @@ public class MainWindow extends JFrame {
   private void checkForUpdate() {
     try {
       final UpdaterTask updateWorker = new UpdaterTask();
+      final MigrationTask migrationWorker = new MigrationTask();
 
       updateWorker.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == StateValue.DONE) {
+
             try {
               boolean update = updateWorker.get();
               LOGGER.debug("update result was: " + update);
@@ -372,6 +375,30 @@ public class MainWindow extends JFrame {
                   }
                 }
               }
+              else {
+                // TODO: add wizard!!
+
+                // no update - check for v3 availability / migration
+                // CacheFlag cf = new CacheFlag(Paths.get("cache", "migv3.popup"), 7);
+                // if (cf.exceeded()) {
+                // boolean v3available = migrationWorker.doInBackground(); // call direct w/o threading
+                // if (v3available) {
+
+                // int answer = JOptionPane.showConfirmDialog(null, "migrate to V3", "migv3", JOptionPane.YES_NO_OPTION);
+                // MigrationDialog mig = new MigrationDialog();
+                // mig.setVisible(true);
+                // if (answer == JOptionPane.NO_OPTION) {
+                // try again in a few days+1
+                // cf.increment();
+                // }
+                // else {
+                // migrate!
+                // migrationWorker.migrateToV3();
+                // }
+                // }
+                // }
+
+              }
             }
             catch (Exception e) {
               LOGGER.error("Update task failed!" + e.getMessage());
@@ -382,6 +409,7 @@ public class MainWindow extends JFrame {
 
       // update task start a few secs after GUI...
       Timer timer = new Timer(5000, new ActionListener() {
+
         @Override
         public void actionPerformed(ActionEvent e) {
           updateWorker.execute();

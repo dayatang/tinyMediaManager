@@ -44,8 +44,9 @@ public class CacheFlag {
   private CacheFlag() {
   }
 
-  public CacheFlag(Path file) {
+  public CacheFlag(Path file, int initial) {
     cacheFile = file;
+    days = initial;
     if (Files.exists(cacheFile)) {
       try {
         String cont = Utils.readFileToString(cacheFile);
