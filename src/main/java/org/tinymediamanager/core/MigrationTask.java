@@ -53,20 +53,7 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
 
     try {
       // check, if v3 already there
-      String gdUrl = "";
-      Path gd = Paths.get("getdown.txt");
-      List<String> cont = Files.readAllLines(gd);
-
-      for (String line : cont) {
-        String[] kv = line.split("=");
-        if ("appbase".equals(kv[0].trim())) {
-          gdUrl = kv[1].trim();
-        }
-      }
-      if (!gdUrl.isEmpty()) {
-        gdUrl = gdUrl.replace("/v2", "/v3");
-        gdUrl += "/getdown.txt";
-      }
+      String gdUrl = getV3UrlFromGD();
       Url u = new Url(gdUrl);
       InputStream is = u.getInputStream(true);
       if (is != null && !u.isFault()) {
@@ -110,19 +97,8 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
     Utils.moveDirectorySafe(Paths.get("data"), Paths.get("data_old_v2"));
 
     // download fresh V3 getdown file
-    String gdUrl = "";
+    String gdUrl = getV3UrlFromGD();
     Path gd = Paths.get("getdown.txt");
-    List<String> cont = Files.readAllLines(gd);
-    for (String line : cont) {
-      String[] kv = line.split("=");
-      if ("appbase".equals(kv[0].trim()) || "mirror".equals(kv[0].trim())) {
-        gdUrl = kv[1].trim();
-      }
-    }
-    if (!gdUrl.isEmpty()) {
-      gdUrl = gdUrl.replace("/v2", "/v3");
-      gdUrl += "/getdown.txt";
-    }
     Url u = new Url(gdUrl);
     boolean ok = u.download(gd);
     if (!ok) {
@@ -133,4 +109,26 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
     // start updater
     MainWindow.getActiveInstance().closeTmmAndStart(Utils.getPBforTMMupdate());
   }
+
+  private String getV3UrlFromGD() throws IOException {
+    String gdUrl = "";
+    Path gd = Paths.get("getdown.txt");
+    List<String> cont = Files.readAllLines(gd);
+
+    for (String line : cont) {
+      String[] kv = line.split("=");
+      if ("appbase".equals(kv[0].trim())) {
+        gdUrl = kv[1].trim();
+      }
+    }
+    if (!gdUrl.isEmpty()) {
+      gdUrl = gdUrl.replace("/v2", "/v3");
+      gdUrl += "/getdown.txt";
+    }
+    else {
+      throw new IOException("no appbase found");
+    }
+    return gdUrl;
+  }
+
 }
