@@ -234,7 +234,7 @@ public class UpdateV3Dialog extends TmmDialog {
               mig.migrateToV3();
             }
             catch (Exception e) {
-              LOGGER.error("Migration failed", e.getMessage());
+              LOGGER.error("Migration failed", e);
               MessageManager.instance.pushMessage(new Message(MessageLevel.ERROR, "Migration FAILED", e.getMessage()));
             }
 

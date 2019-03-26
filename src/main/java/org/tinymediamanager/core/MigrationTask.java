@@ -92,25 +92,56 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
     }
 
     if (ReleaseInfo.isGitBuild()) {
+      // EXIT
       throw new IOException("Update cannot be executed inside IDE!");
     }
 
     // download fresh V3 getdown file (should fail in eclipse on purpose)
     LOGGER.info("MIG: downloading fresh updater file...");
-    String gdUrl = getV3UrlFromGD();
+    String gdUrl = "";
+    Url u = null;
+    try {
+      gdUrl = getV3UrlFromGD();
+      u = new Url(gdUrl); // validate
+    }
+    catch (Exception e) {
+      // EXIT
+      throw new IOException("Could not find a valid URL for updating to V3!");
+    }
+
     Path gd = Paths.get("getdown.txt");
-    Url u = new Url(gdUrl);
-    boolean ok = u.download(gd);
-    if (!ok) {
-      LOGGER.info("MIG: ...failed - write new minimum file");
-      Utils.writeStringToFile(gd, "appbase=" + gdUrl);
+    Path backup = Paths.get("cache", "getdown.txt.v2");
+    try {
+      Utils.moveFileSafe(gd, backup);
+      boolean ok = u.download(gd);
+      if (!ok) {
+        LOGGER.info("MIG: ...failed - write new minimum file");
+        Utils.writeStringToFile(gd, "appbase=" + gdUrl);
+      }
+    }
+    catch (Exception e) {
+      // backup failed? or url still NULL?
+      // try to restore GD if we fave any
+      if (Files.exists(backup)) {
+        try {
+          Utils.moveFileSafe(backup, gd);
+        }
+        catch (Exception e2) {
+          LOGGER.error("MIG: restoring backup file failed!", e);
+        }
+      }
     }
 
     LOGGER.info("MIG: close databases");
     TmmModuleManager.getInstance().shutDown();
 
     LOGGER.info("MIG: removing old settings and databases");
-    Utils.moveDirectorySafe(Paths.get("data"), Paths.get("data_old_v2"));
+    try {
+      Utils.moveDirectorySafe(Paths.get(".", "data"), Paths.get(".", "data_old_v2"));
+    }
+    catch (Exception e) {
+      LOGGER.error("MIG: data folder backup failed!", e);
+    }
 
     LOGGER.info("MIG: Starting update...");
     MainWindow.getActiveInstance().closeTmmAndStart(Utils.getPBforTMMupdate());
