@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.tinymediamanager.core.Message;
 import org.tinymediamanager.core.Message.MessageLevel;
 import org.tinymediamanager.core.MessageManager;
+import org.tinymediamanager.core.MigrationTask;
 import org.tinymediamanager.ui.EqualsLayout;
 import org.tinymediamanager.ui.TmmFontHelper;
 import org.tinymediamanager.ui.TmmUIHelper;
@@ -170,7 +171,7 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(linkLabel, "6, 36");
       }
       {
-        JLabel lblNewLabel_13 = new JLabel("Update info");
+        JLabel lblNewLabel_13 = new JLabel("Update info:");
         TmmFontHelper.changeFont(lblNewLabel_13, 1.16, Font.BOLD);
         panel.add(lblNewLabel_13, "2, 40, 5, 1");
       }
@@ -179,31 +180,31 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(lblNewLabel_14, "4, 42, 3, 1");
       }
       {
-        JLabel lblNewLabel_15 = new JLabel("By pressing the \"Update\" button the following steps will be processed");
+        JLabel lblNewLabel_15 = new JLabel("By pressing the \"Update\" button the following steps will be processed:");
         panel.add(lblNewLabel_15, "4, 44, 3, 1");
       }
       {
-        JLabel lblNewLabel_16 = new JLabel("a) your tinyMediaManager database will be deleted");
+        JLabel lblNewLabel_16 = new JLabel("a) all your movie/tvshow databases will be deleted.");
         panel.add(lblNewLabel_16, "6, 46");
       }
       {
-        JLabel lblNewLabel_17 = new JLabel("b) the settings for data sources will be exported");
+        JLabel lblNewLabel_17 = new JLabel("b) all the settings will be reset to their default values.");
         panel.add(lblNewLabel_17, "6, 48");
       }
       {
-        JLabel lblNewLabel_18 = new JLabel("c) tmm will be upgraded to v3");
+        JLabel lblNewLabel_18 = new JLabel("c) TMM upgrade to V3 will be performed.");
         panel.add(lblNewLabel_18, "6, 50");
       }
       {
-        JLabel lblNewLabel_19 = new JLabel("d) the settings for your data sources will be imported into v3");
+        JLabel lblNewLabel_19 = new JLabel("d) Your existing datasources will be imported.");
         panel.add(lblNewLabel_19, "6, 52");
       }
       {
-        JLabel lblNewLabel_20 = new JLabel("e) an automatic \"update datasources\" will be performed");
+        JLabel lblNewLabel_20 = new JLabel("e) And an automatic \"update datasources\" will be performed.");
         panel.add(lblNewLabel_20, "6, 54");
       }
       {
-        JLabel lblNewLabel_21 = new JLabel("Unfortunately you have to make all your settings in v3 too since we're not able to migrate them");
+        JLabel lblNewLabel_21 = new JLabel("");
         panel.add(lblNewLabel_21, "4, 56, 5, 1");
       }
     }
@@ -228,8 +229,15 @@ public class UpdateV3Dialog extends TmmDialog {
           public void actionPerformed(ActionEvent arg0) {
             setVisible(false);
             LOGGER.info("Updating...");
+            final MigrationTask mig = new MigrationTask();
+            try {
+              mig.migrateToV3();
+            }
+            catch (Exception e) {
+              LOGGER.error("Migration failed", e.getMessage());
+              MessageManager.instance.pushMessage(new Message(MessageLevel.ERROR, "Migration FAILED", e.getMessage()));
+            }
 
-            // FIXME: start upgrade
           }
         });
       }

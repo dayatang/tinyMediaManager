@@ -81,6 +81,7 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
 
     // backup datasources to plain text file for easier xml->JSON migration
     try {
+      LOGGER.info("MIG: backing up datasources");
       Path ds = Paths.get("cache", "migv3movies.ds");
       Files.write(ds, Settings.getInstance().getMovieSettings().getMovieDataSource(), StandardCharsets.UTF_8);
       ds = Paths.get("cache", "migv3shows.ds");
@@ -90,23 +91,28 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
       LOGGER.warn("MIG: could not backup datasources");
     }
 
-    // close databases
-    TmmModuleManager.getInstance().shutDown();
+    if (ReleaseInfo.isGitBuild()) {
+      throw new IOException("Update cannot be executed inside IDE!");
+    }
 
-    // last backup of old databases & settings
-    Utils.moveDirectorySafe(Paths.get("data"), Paths.get("data_old_v2"));
-
-    // download fresh V3 getdown file
+    // download fresh V3 getdown file (should fail in eclipse on purpose)
+    LOGGER.info("MIG: downloading fresh updater file...");
     String gdUrl = getV3UrlFromGD();
     Path gd = Paths.get("getdown.txt");
     Url u = new Url(gdUrl);
     boolean ok = u.download(gd);
     if (!ok) {
-      // try to write minimalist file on our own.
+      LOGGER.info("MIG: ...failed - write new minimum file");
       Utils.writeStringToFile(gd, "appbase=" + gdUrl);
     }
 
-    // start updater
+    LOGGER.info("MIG: close databases");
+    TmmModuleManager.getInstance().shutDown();
+
+    LOGGER.info("MIG: removing old settings and databases");
+    Utils.moveDirectorySafe(Paths.get("data"), Paths.get("data_old_v2"));
+
+    LOGGER.info("MIG: Starting update...");
     MainWindow.getActiveInstance().closeTmmAndStart(Utils.getPBforTMMupdate());
   }
 

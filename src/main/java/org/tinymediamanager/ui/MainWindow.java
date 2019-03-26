@@ -71,6 +71,7 @@ import org.tinymediamanager.core.UpdaterTask;
 import org.tinymediamanager.core.Utils;
 import org.tinymediamanager.core.WolDevice;
 import org.tinymediamanager.core.threading.TmmTaskManager;
+import org.tinymediamanager.thirdparty.CacheFlag;
 import org.tinymediamanager.thirdparty.MediaInfo;
 import org.tinymediamanager.thirdparty.upnp.Upnp;
 import org.tinymediamanager.ui.actions.AboutAction;
@@ -93,6 +94,7 @@ import org.tinymediamanager.ui.components.VerticalTextIcon;
 import org.tinymediamanager.ui.dialogs.LogDialog;
 import org.tinymediamanager.ui.dialogs.MessageHistoryDialog;
 import org.tinymediamanager.ui.dialogs.UpdateDialog;
+import org.tinymediamanager.ui.dialogs.UpdateV3Dialog;
 import org.tinymediamanager.ui.images.Logo;
 import org.tinymediamanager.ui.movies.MoviePanel;
 import org.tinymediamanager.ui.moviesets.MovieSetPanel;
@@ -282,8 +284,19 @@ public class MainWindow extends JFrame {
           LOGGER.trace("if you see that, we're now on TRACE logging level ;)");
         }
       });
-
       debugMenu.add(trace);
+
+      JMenuItem v3mig = new JMenuItem("V3 migration"); //$NON-NLS-1$
+      v3mig.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          UpdateV3Dialog dialog = new UpdateV3Dialog();
+          dialog.setVisible(true);
+        }
+      });
+      debugMenu.add(v3mig);
+
       tools.add(debugMenu);
     }
 
@@ -376,27 +389,20 @@ public class MainWindow extends JFrame {
                 }
               }
               else {
-                // TODO: add wizard!!
 
-                // no update - check for v3 availability / migration
-                // CacheFlag cf = new CacheFlag(Paths.get("cache", "migv3.popup"), 7);
-                // if (cf.exceeded()) {
-                // boolean v3available = migrationWorker.doInBackground(); // call direct w/o threading
-                // if (v3available) {
-
-                // int answer = JOptionPane.showConfirmDialog(null, "migrate to V3", "migv3", JOptionPane.YES_NO_OPTION);
-                // MigrationDialog mig = new MigrationDialog();
-                // mig.setVisible(true);
-                // if (answer == JOptionPane.NO_OPTION) {
-                // try again in a few days+1
-                // cf.increment();
-                // }
-                // else {
-                // migrate!
-                // migrationWorker.migrateToV3();
-                // }
-                // }
-                // }
+                // FIXME: remove for live
+                if (Globals.isDebug()) {
+                  // no update - check for v3 availability / migration every 7 days
+                  CacheFlag cf = new CacheFlag(Paths.get("cache", "migv3.popup"), 7);
+                  if (cf.exceeded()) {
+                    boolean v3available = migrationWorker.doInBackground(); // call direct w/o threading
+                    if (v3available) {
+                      cf.increment();
+                      UpdateV3Dialog dialog = new UpdateV3Dialog();
+                      dialog.setVisible(true);
+                    }
+                  }
+                }
 
               }
             }
