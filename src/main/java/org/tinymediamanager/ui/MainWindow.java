@@ -390,17 +390,14 @@ public class MainWindow extends JFrame {
               }
               else {
 
-                // FIXME: remove for live
-                if (Globals.isDebug()) {
-                  // no update - check for v3 availability / migration every 7 days
-                  CacheFlag cf = new CacheFlag(Paths.get("cache", "migv3.popup"), 7);
-                  if (cf.exceeded()) {
-                    boolean v3available = migrationWorker.doInBackground(); // call direct w/o threading
-                    if (v3available) {
-                      cf.increment();
-                      UpdateV3Dialog dialog = new UpdateV3Dialog();
-                      dialog.setVisible(true);
-                    }
+                // no update - check for v3 availability / migration every 7 days
+                CacheFlag cf = new CacheFlag(Paths.get("cache", "migv3.popup"), 7);
+                if (cf.exceeded()) {
+                  boolean v3available = migrationWorker.doInBackground(); // call direct w/o threading
+                  if (v3available) {
+                    cf.increment();
+                    UpdateV3Dialog dialog = new UpdateV3Dialog();
+                    dialog.setVisible(true);
                   }
                 }
 

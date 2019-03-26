@@ -130,6 +130,8 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
           LOGGER.error("MIG: restoring backup file failed!", e);
         }
       }
+      // EXIT
+      throw new IOException("could not get a valid updater file and/or backup failed");
     }
 
     LOGGER.info("MIG: close databases");
@@ -140,7 +142,22 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
       Utils.moveDirectorySafe(Paths.get(".", "data"), Paths.get(".", "data_old_v2"));
     }
     catch (Exception e) {
-      LOGGER.error("MIG: data folder backup failed!", e);
+      // EXIT
+      throw new IOException("could not remove old settings and databases!", e);
+    }
+
+    LOGGER.info("MIG: preload additional V3 resources"); // so that the updater already looks like V3 ;)
+    try {
+      String base = gdUrl.replace("getdown.txt", "");
+      u = new Url(base + "progress.jpg");
+      u.download(Paths.get("progress.jpg"));
+      u = new Url(base + "splashscreen.png");
+      u.download(Paths.get("splashscreen.png"));
+      u = new Url(base + "tmm.png");
+      u.download(Paths.get("tmm.png"));
+    }
+    catch (Exception e) {
+      LOGGER.warn("MIG: could not preload", e); // but we don't care
     }
 
     LOGGER.info("MIG: Starting update...");
