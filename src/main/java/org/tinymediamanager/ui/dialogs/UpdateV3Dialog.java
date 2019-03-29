@@ -26,8 +26,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tinymediamanager.ReleaseInfo;
 import org.tinymediamanager.core.Message;
 import org.tinymediamanager.core.Message.MessageLevel;
 import org.tinymediamanager.core.MessageManager;
@@ -56,7 +58,7 @@ public class UpdateV3Dialog extends TmmDialog {
   private static final ResourceBundle BUNDLE           = ResourceBundle.getBundle("messages", new UTF8Control()); //$NON-NLS-1$
   private static final Logger         LOGGER           = LoggerFactory.getLogger(UpdateV3Dialog.class);
 
-  private JButton btnClose;
+  private JButton                     btnClose;
 
   public UpdateV3Dialog() {
     super(BUNDLE.getString("tmm.update.title"), "update"); //$NON-NLS-1$
@@ -165,7 +167,13 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(linkLabel, "6, 34");
       }
       {
-        JLabel lblNewLabel_13 = new JLabel("Update info:");
+        String v = "";
+        v = ReleaseInfo.isGitBuild() ? "-GIT" : v;
+        v = ReleaseInfo.isReleaseBuild() ? "-RELEASE" : v;
+        v = ReleaseInfo.isNightly() ? "-NIGHTLY" : v;
+        v = ReleaseInfo.isPreRelease() ? "-PRE-RELEASE" : v;
+        String current = ReleaseInfo.getRealVersion().replace("-SNAPSHOT", v); // nicer
+        JLabel lblNewLabel_13 = new JLabel("Update info:  " + current + " -> 3.0" + v);
         TmmFontHelper.changeFont(lblNewLabel_13, 1.16, Font.BOLD);
         panel.add(lblNewLabel_13, "2, 38, 5, 1");
       }
@@ -217,7 +225,10 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(panel_1, "2, 2, fill, fill");
 
         JButton btnUpdate = new JButton(BUNDLE.getString("Button.update"));
-        btnUpdate.setFocusable(false);
+        if (SystemUtils.IS_JAVA_1_7) { // TMM 3 needs Java 8
+          btnUpdate.setEnabled(false);
+          btnUpdate.setText(btnUpdate.getText() + " (Java 8+ required!)");
+        }
         panel_1.add(btnUpdate, "1, 1");
         btnUpdate.addActionListener(new ActionListener() {
           @Override
