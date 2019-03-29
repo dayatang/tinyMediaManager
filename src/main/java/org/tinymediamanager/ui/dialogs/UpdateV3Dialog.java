@@ -20,8 +20,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -58,6 +56,8 @@ public class UpdateV3Dialog extends TmmDialog {
   private static final ResourceBundle BUNDLE           = ResourceBundle.getBundle("messages", new UTF8Control()); //$NON-NLS-1$
   private static final Logger         LOGGER           = LoggerFactory.getLogger(UpdateV3Dialog.class);
 
+  private JButton btnClose;
+
   public UpdateV3Dialog() {
     super(BUNDLE.getString("tmm.update.title"), "update"); //$NON-NLS-1$
 
@@ -66,7 +66,7 @@ public class UpdateV3Dialog extends TmmDialog {
       getContentPane().add(panel, BorderLayout.CENTER);
       panel.setLayout(new FormLayout(
           new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("10dlu"), FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("10dlu"),
-              FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("300dlu:grow"),
+              FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("250dlu"), FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("300dlu"),
               FormSpecs.RELATED_GAP_COLSPEC, },
           new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.PARAGRAPH_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
@@ -75,14 +75,13 @@ public class UpdateV3Dialog extends TmmDialog {
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-              FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("5dlu"),
-              FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-              FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("15dlu"), FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-              FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+              FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("5dlu"), FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+              FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("15dlu"),
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
               FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-              FormSpecs.RELATED_GAP_ROWSPEC, }));
+              FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+              FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, }));
 
       JLabel lblUpdateInfo = new JLabel();
       lblUpdateInfo.setText("tinyMediaManager v3 is available");
@@ -95,7 +94,7 @@ public class UpdateV3Dialog extends TmmDialog {
       {
         JLabel lblScreenshot = new JLabel(new ImageIcon(UpdateV3Dialog.class.getResource("/v3.png")));
 
-        panel.add(lblScreenshot, "8, 6, 1, 41, center, center");
+        panel.add(lblScreenshot, "8, 10, 1, 37, center, center");
       }
       {
         JLabel lblNewLabel = new JLabel("completely rewritten UI");
@@ -103,7 +102,7 @@ public class UpdateV3Dialog extends TmmDialog {
       }
       {
         JLabel lblNewLabel_1 = new JLabel("new style and layout (better usage of the available space especially for low screen devices)");
-        panel.add(lblNewLabel_1, "6, 8");
+        panel.add(lblNewLabel_1, "6, 8, 3, 1");
       }
       {
         JLabel lblNewLabel_2 = new JLabel("flexible and configurable tables");
@@ -138,20 +137,16 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(lblNewLabel_12, "4, 24, 3, 1");
       }
       {
-        JLabel lblNewLabel_8 = new JLabel("easier translation via weblate.org");
-        panel.add(lblNewLabel_8, "4, 26, 3, 1");
-      }
-      {
         JLabel lblNewLabel_9 = new JLabel("increased required Java version to Java 8+");
-        panel.add(lblNewLabel_9, "4, 28, 3, 1");
+        panel.add(lblNewLabel_9, "4, 26, 3, 1");
       }
       {
         JLabel lblNewLabel_10 = new JLabel("many enhancements under the hood");
-        panel.add(lblNewLabel_10, "4, 30, 3, 1");
+        panel.add(lblNewLabel_10, "4, 28, 3, 1");
       }
       {
         JLabel lblNewLabel_22 = new JLabel("More infos at");
-        panel.add(lblNewLabel_22, "4, 34, 3, 1");
+        panel.add(lblNewLabel_22, "4, 32, 3, 1");
       }
       {
         final LinkLabel linkLabel = new LinkLabel("http://www.tinymediamanager.org/");
@@ -167,44 +162,44 @@ public class UpdateV3Dialog extends TmmDialog {
             }
           }
         });
-        panel.add(linkLabel, "6, 36");
+        panel.add(linkLabel, "6, 34");
       }
       {
         JLabel lblNewLabel_13 = new JLabel("Update info:");
         TmmFontHelper.changeFont(lblNewLabel_13, 1.16, Font.BOLD);
-        panel.add(lblNewLabel_13, "2, 40, 5, 1");
+        panel.add(lblNewLabel_13, "2, 38, 5, 1");
       }
       {
         JLabel lblNewLabel_14 = new JLabel("A direct update to v3 is not possible since too many things changed.");
-        panel.add(lblNewLabel_14, "4, 42, 3, 1");
+        panel.add(lblNewLabel_14, "4, 40, 3, 1");
       }
       {
         JLabel lblNewLabel_15 = new JLabel("By pressing the \"Update\" button the following steps will be processed:");
-        panel.add(lblNewLabel_15, "4, 44, 3, 1");
+        panel.add(lblNewLabel_15, "4, 42, 3, 1");
       }
       {
         JLabel lblNewLabel_16 = new JLabel("a) all your movie/tvshow databases will be deleted.");
-        panel.add(lblNewLabel_16, "6, 46");
+        panel.add(lblNewLabel_16, "6, 44");
       }
       {
         JLabel lblNewLabel_17 = new JLabel("b) all the settings will be reset to their default values.");
-        panel.add(lblNewLabel_17, "6, 48");
+        panel.add(lblNewLabel_17, "6, 46");
       }
       {
         JLabel lblNewLabel_18 = new JLabel("c) TMM upgrade to V3 will be performed.");
-        panel.add(lblNewLabel_18, "6, 50");
+        panel.add(lblNewLabel_18, "6, 48");
       }
       {
         JLabel lblNewLabel_19 = new JLabel("d) Your existing datasources will be imported.");
-        panel.add(lblNewLabel_19, "6, 52");
+        panel.add(lblNewLabel_19, "6, 50");
       }
       {
         JLabel lblNewLabel_20 = new JLabel("e) And an automatic \"update datasources\" will be performed.");
-        panel.add(lblNewLabel_20, "6, 54");
+        panel.add(lblNewLabel_20, "6, 52");
       }
       {
         JLabel lblNewLabel_21 = new JLabel("");
-        panel.add(lblNewLabel_21, "4, 56, 5, 1");
+        panel.add(lblNewLabel_21, "4, 54, 5, 1");
       }
     }
     {
@@ -222,6 +217,7 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(panel_1, "2, 2, fill, fill");
 
         JButton btnUpdate = new JButton(BUNDLE.getString("Button.update"));
+        btnUpdate.setFocusable(false);
         panel_1.add(btnUpdate, "1, 1");
         btnUpdate.addActionListener(new ActionListener() {
           @Override
@@ -247,8 +243,7 @@ public class UpdateV3Dialog extends TmmDialog {
       buttonPanel.setLayout(layout);
       panel.add(buttonPanel, "6, 2");
 
-      JButton btnClose = new JButton(BUNDLE.getString("Button.close")); //$NON-NLS-1$
-      getRootPane().setDefaultButton(btnClose);
+      btnClose = new JButton(BUNDLE.getString("Button.close")); //$NON-NLS-1$
       btnClose.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent arg0) {
@@ -256,17 +251,7 @@ public class UpdateV3Dialog extends TmmDialog {
         }
       });
       buttonPanel.add(btnClose);
+      getRootPane().setDefaultButton(btnClose);
     }
-
-  }
-
-  private String prepareTextAsHtml(String originalText) {
-    Pattern pattern = Pattern.compile("(http[s]?://.*?)[ )]");
-    Matcher matcher = pattern.matcher(originalText);
-    while (matcher.find()) {
-      originalText = originalText.replace(matcher.group(1), "<a href=\"" + matcher.group(1) + "\">" + matcher.group(1) + "</a>");
-    }
-
-    return "<html><pre>" + originalText + "</pre><html>";
   }
 }
