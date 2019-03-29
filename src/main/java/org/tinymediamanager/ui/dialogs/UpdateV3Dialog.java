@@ -16,7 +16,6 @@
 package org.tinymediamanager.ui.dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,7 +60,7 @@ public class UpdateV3Dialog extends TmmDialog {
 
   public UpdateV3Dialog() {
     super(BUNDLE.getString("tmm.update.title"), "update"); //$NON-NLS-1$
-    setSize(705, 503);
+
     {
       JPanel panel = new JPanel();
       getContentPane().add(panel, BorderLayout.CENTER);
@@ -259,13 +258,6 @@ public class UpdateV3Dialog extends TmmDialog {
       buttonPanel.add(btnClose);
     }
 
-  }
-
-  @Override
-  public Dimension getPreferredSize() {
-    Dimension superPref = super.getPreferredSize();
-    return new Dimension((int) (700 > superPref.getWidth() ? superPref.getWidth() : 700),
-        (int) (500 > superPref.getHeight() ? superPref.getHeight() : 500));
   }
 
   private String prepareTextAsHtml(String originalText) {
