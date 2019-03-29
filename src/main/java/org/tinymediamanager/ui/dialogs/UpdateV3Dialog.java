@@ -225,6 +225,7 @@ public class UpdateV3Dialog extends TmmDialog {
         panel.add(panel_1, "2, 2, fill, fill");
 
         JButton btnUpdate = new JButton(BUNDLE.getString("Button.update"));
+        btnUpdate.setFocusable(false);
         if (SystemUtils.IS_JAVA_1_7) { // TMM 3 needs Java 8
           btnUpdate.setEnabled(false);
           btnUpdate.setText(btnUpdate.getText() + " (Java 8+ required!)");
