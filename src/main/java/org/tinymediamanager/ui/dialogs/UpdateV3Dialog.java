@@ -61,7 +61,7 @@ public class UpdateV3Dialog extends TmmDialog {
   private JButton                     btnClose;
 
   public UpdateV3Dialog() {
-    super(BUNDLE.getString("tmm.update.title"), "update"); //$NON-NLS-1$
+    super(BUNDLE.getString("tmm.update.title"), "updateV3"); //$NON-NLS-1$
 
     {
       JPanel panel = new JPanel();
