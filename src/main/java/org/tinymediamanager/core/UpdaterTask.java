@@ -101,7 +101,7 @@ public class UpdaterTask extends SwingWorker<Boolean, Void> {
             }
           }
 
-          Url upd = new Url(uu + "digest.txt?z=" + System.currentTimeMillis()); // cache bust
+          Url upd = new Url(uu + "digest.txt");
           LOGGER.trace("Checking " + uu);
           remoteDigest = IOUtils.toString(upd.getInputStream(), "UTF-8");
           if (remoteDigest != null && remoteDigest.contains("tmm.jar")) {
