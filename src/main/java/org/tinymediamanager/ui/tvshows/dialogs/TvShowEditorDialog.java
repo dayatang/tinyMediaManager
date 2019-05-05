@@ -34,7 +34,6 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -299,7 +298,11 @@ public class TvShowEditorDialog extends TmmDialog {
       }
     }
     cbCertification = new JComboBox();
-    for (Certification cert : Certification.getCertificationsforCountry(TvShowModuleManager.SETTINGS.getCertificationCountry())) {
+    List<Certification> availableCertifications = Certification.getCertificationsforCountry(TvShowModuleManager.SETTINGS.getCertificationCountry());
+    if (!availableCertifications.contains(tvShowToEdit.getCertification())) {
+      availableCertifications.add(0, tvShowToEdit.getCertification());
+    }
+    for (Certification cert : availableCertifications) {
       cbCertification.addItem(cert);
     }
     details1Panel.add(cbCertification, "10, 8, fill, default");
@@ -695,11 +698,6 @@ public class TvShowEditorDialog extends TmmDialog {
         container.episode = episode.getEpisode();
         episodes.add(container);
       }
-
-      if (((DefaultComboBoxModel) cbCertification.getModel()).getIndexOf(tvShow.getCertification()) == -1) {
-        cbCertification.addItem(tvShow.getCertification());
-      }
-
     }
     lblBanner = new ImageLabel();
     lblBanner.setAlternativeText(BUNDLE.getString("image.notfound.banner")); //$NON-NLS-1$

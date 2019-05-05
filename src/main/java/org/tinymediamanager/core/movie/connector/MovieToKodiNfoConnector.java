@@ -86,6 +86,7 @@ import org.tinymediamanager.scraper.entities.Certification;
 import org.tinymediamanager.scraper.entities.CountryCode;
 import org.tinymediamanager.scraper.entities.MediaGenres;
 import org.tinymediamanager.scraper.util.ParserUtils;
+import org.tinymediamanager.scraper.util.StrgUtils;
 
 /**
  * The Class MovieToKodiNfoConnector. This class is the interface between tinyMediaManager and the Kodi style NFO files
@@ -272,6 +273,7 @@ public class MovieToKodiNfoConnector {
     }
     kodi.year = movie.getYear();
     kodi.premiered = movie.getReleaseDateFormatted();
+    kodi.dateadded = movie.getDateAddedAsString();
     kodi.plot = movie.getPlot();
 
     // outline is only the first 200 characters of the plot
@@ -575,6 +577,14 @@ public class MovieToKodiNfoConnector {
         movie.setTop250(0);
       }
       movie.setReleaseDate(kodi.premiered);
+      try {
+        Date d = StrgUtils.parseDate(kodi.dateadded);
+        if (d != null) {
+          movie.setDateAdded(d);
+        }
+      }
+      catch (Exception e) {
+      }
       movie.setPlot(kodi.plot);
       movie.setTagline(kodi.tagline);
       try {

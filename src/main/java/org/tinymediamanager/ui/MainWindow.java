@@ -65,11 +65,13 @@ import org.tinymediamanager.Globals;
 import org.tinymediamanager.core.Message;
 import org.tinymediamanager.core.Message.MessageLevel;
 import org.tinymediamanager.core.MessageManager;
+import org.tinymediamanager.core.MigrationTask;
 import org.tinymediamanager.core.TmmModuleManager;
 import org.tinymediamanager.core.UpdaterTask;
 import org.tinymediamanager.core.Utils;
 import org.tinymediamanager.core.WolDevice;
 import org.tinymediamanager.core.threading.TmmTaskManager;
+import org.tinymediamanager.thirdparty.CacheFlag;
 import org.tinymediamanager.thirdparty.MediaInfo;
 import org.tinymediamanager.thirdparty.upnp.Upnp;
 import org.tinymediamanager.ui.actions.AboutAction;
@@ -92,6 +94,7 @@ import org.tinymediamanager.ui.components.VerticalTextIcon;
 import org.tinymediamanager.ui.dialogs.LogDialog;
 import org.tinymediamanager.ui.dialogs.MessageHistoryDialog;
 import org.tinymediamanager.ui.dialogs.UpdateDialog;
+import org.tinymediamanager.ui.dialogs.UpdateV3Dialog;
 import org.tinymediamanager.ui.images.Logo;
 import org.tinymediamanager.ui.movies.MoviePanel;
 import org.tinymediamanager.ui.moviesets.MovieSetPanel;
@@ -281,8 +284,19 @@ public class MainWindow extends JFrame {
           LOGGER.trace("if you see that, we're now on TRACE logging level ;)");
         }
       });
-
       debugMenu.add(trace);
+
+      JMenuItem v3mig = new JMenuItem("V3 migration"); //$NON-NLS-1$
+      v3mig.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          UpdateV3Dialog dialog = new UpdateV3Dialog();
+          dialog.setVisible(true);
+        }
+      });
+      debugMenu.add(v3mig);
+
       tools.add(debugMenu);
     }
 
@@ -338,10 +352,12 @@ public class MainWindow extends JFrame {
   private void checkForUpdate() {
     try {
       final UpdaterTask updateWorker = new UpdaterTask();
+      final MigrationTask migrationWorker = new MigrationTask();
 
       updateWorker.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
           if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == StateValue.DONE) {
+
             try {
               boolean update = updateWorker.get();
               LOGGER.debug("update result was: " + update);
@@ -372,6 +388,20 @@ public class MainWindow extends JFrame {
                   }
                 }
               }
+              else {
+
+                // no update - check for v3 availability / migration every 7 days
+                CacheFlag cf = new CacheFlag(Paths.get("cache", "migv3.popup"), 7);
+                if (cf.exceeded()) {
+                  boolean v3available = migrationWorker.doInBackground(); // call direct w/o threading
+                  if (v3available) {
+                    cf.increment();
+                    UpdateV3Dialog dialog = new UpdateV3Dialog();
+                    dialog.setVisible(true);
+                  }
+                }
+
+              }
             }
             catch (Exception e) {
               LOGGER.error("Update task failed!" + e.getMessage());
@@ -382,6 +412,7 @@ public class MainWindow extends JFrame {
 
       // update task start a few secs after GUI...
       Timer timer = new Timer(5000, new ActionListener() {
+
         @Override
         public void actionPerformed(ActionEvent e) {
           updateWorker.execute();

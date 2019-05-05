@@ -671,6 +671,28 @@ public class UpgradeTasks {
         }
       }
     }
+
+    // upgrade to v2.9.17
+    if (StrgUtils.compareVersion(v, "2.9.17") < 0) {
+      // execute only once (no need to rewrite always NFO on prerelease users)
+      Path flag = Paths.get("cache", "mig2917");
+      if (!Files.exists(flag)) {
+        LOGGER.info("Performing database upgrade tasks to version 2.9.17");
+        // rewriting TV show NFOs b/c of changed episodenguide url
+        try {
+          for (TvShow show : TvShowList.getInstance().getTvShows()) {
+            if (!show.getIdAsString(Constants.TVDB).isEmpty()) {
+              show.writeNFO();
+            }
+          }
+          Files.createFile(flag);
+        }
+        catch (IOException e) {
+          LOGGER.warn("could not create flag file {}", e.getMessage());
+        }
+      }
+    }
+
   }
 
   /**
