@@ -167,7 +167,7 @@ public class MigrationTask extends SwingWorker<Boolean, Void> {
   private String getV3UrlFromGD() throws IOException {
     String gdUrl = "";
     Path gd = Paths.get("getdown.txt");
-    List<String> cont = Files.readAllLines(gd);
+    List<String> cont = Files.readAllLines(gd,StandardCharsets.UTF_8);
 
     for (String line : cont) {
       String[] kv = line.split("=");
