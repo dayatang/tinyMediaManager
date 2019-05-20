@@ -1,3 +1,9 @@
+Version 2.9.17.1
+=======================
+x fixed writing of the date added in the Kodi NFO
+x fixed more AniDb caching issues
+
+
 Version 2.9.17
 =======================
 x fixed artwork loading from TVDB

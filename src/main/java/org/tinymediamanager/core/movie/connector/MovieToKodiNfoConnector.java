@@ -273,7 +273,7 @@ public class MovieToKodiNfoConnector {
     }
     kodi.year = movie.getYear();
     kodi.premiered = movie.getReleaseDateFormatted();
-    kodi.dateadded = movie.getDateAddedAsString();
+    kodi.dateadded = movie.getDateAddedFormatted();
     kodi.plot = movie.getPlot();
 
     // outline is only the first 200 characters of the plot
