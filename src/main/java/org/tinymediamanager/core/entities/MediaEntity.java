@@ -383,6 +383,14 @@ public abstract class MediaEntity extends AbstractModelObject {
     return dateAdded;
   }
 
+  public String getDateAddedFormatted() {
+    if (dateAdded == null) {
+      return "";
+    }
+
+    return new SimpleDateFormat("yyyy-MM-dd").format(dateAdded);
+  }
+
   public String getDateAddedAsString() {
     if (dateAdded == null) {
       return "";
